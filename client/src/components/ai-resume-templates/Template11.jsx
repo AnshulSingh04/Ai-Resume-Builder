@@ -3,7 +3,7 @@ import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
 import { useResume } from "../../context/ResumeContext";
 
-const Template7 = () => {
+const Template11 = () => {
   const resumeRef = useRef(null);
   const { resumeData, setResumeData } = useResume();
   const [editMode, setEditMode] = useState(false);
@@ -15,12 +15,16 @@ const Template7 = () => {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showCertificationForm, setShowCertificationForm] = useState(false);
   const [showSkillForm, setShowSkillForm] = useState(false);
+  const [showLanguageForm, setShowLanguageForm] = useState(false);
+  const [showInterestForm, setShowInterestForm] = useState(false);  const [showAchievementForm, setShowAchievementForm] = useState(false);
 
   // Editing states
   const [editingExperience, setEditingExperience] = useState(null);
   const [editingEducation, setEditingEducation] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [editingCertification, setEditingCertification] = useState(null);
+  const [editingAchievement, setEditingAchievement] = useState(null);
+
 
   // New entry states
   const [newExperience, setNewExperience] = useState({
@@ -49,6 +53,11 @@ const Template7 = () => {
     date: "",
   });
   const [newSkill, setNewSkill] = useState("");
+  const [newLanguage, setNewLanguage] = useState("");
+  const [newInterest, setNewInterest] = useState("");
+  const [newAchievement, setNewAchievement] = useState("");
+
+
 
   useEffect(() => {
     setLocalData(resumeData);
@@ -191,42 +200,49 @@ const Template7 = () => {
     setEditingProject(index);
     setNewProject({
       ...proj,
-      technologies: proj.technologies.join(", ")
+      technologies: Array.isArray(proj.technologies) ? proj.technologies.join(",") : (proj.technologies || "")
     });
     setShowProjectForm(true);
   };
 
   // Certification handlers
-  const addOrUpdateCertification = (e) => {
-    e.preventDefault();
-    if (!newCertification.title || !newCertification.issuer || !newCertification.date) return;
-
-    if (editingCertification !== null) {
-      const updated = [...localData.certifications];
-      updated[editingCertification] = newCertification;
-      setLocalData({ ...localData, certifications: updated });
-      setEditingCertification(null);
-    } else {
-      setLocalData({
-        ...localData,
-        certifications: [...localData.certifications, newCertification]
-      });
-    }
-
-    setShowCertificationForm(false);
-    setNewCertification({ title: "", issuer: "", date: "" });
-  };
-
-  const removeCertification = (index) => {
-    const updated = localData.certifications.filter((_, i) => i !== index);
-    setLocalData({ ...localData, certifications: updated });
-  };
-
   const editCertification = (index) => {
     const cert = localData.certifications[index];
     setEditingCertification(index);
     setNewCertification(cert);
     setShowCertificationForm(true);
+  };
+
+  // Achievement handlers
+  const addOrUpdateAchievement = (e) => {
+    e.preventDefault();
+    if (!newAchievement.trim()) return;
+
+    if (editingAchievement !== null) {
+      const updated = [...localData.achievements];
+      updated[editingAchievement] = newAchievement.trim();
+      setLocalData({ ...localData, achievements: updated });
+      setEditingAchievement(null);
+    } else {
+      setLocalData({
+        ...localData,
+        achievements: [...localData.achievements, newAchievement.trim()]
+      });
+    }
+
+    setShowAchievementForm(false);
+    setNewAchievement("");
+  };
+
+  const editAchievement = (index) => {
+    setEditingAchievement(index);
+    setNewAchievement(localData.achievements[index]);
+    setShowAchievementForm(true);
+  };
+
+  const removeAchievement = (index) => {
+    const updated = localData.achievements.filter((_, i) => i !== index);
+    setLocalData({ ...localData, achievements: updated });
   };
 
   // Skill handlers
@@ -245,7 +261,36 @@ const Template7 = () => {
     const updated = localData.skills.filter((_, i) => i !== index);
     setLocalData({ ...localData, skills: updated });
   };
+  const addLanguage = (e) => {
+    e.preventDefault();
+    if (!newLanguage.trim()) return;
+    setLocalData({
+      ...localData,
+      languages: [...localData.languages, newLanguage.trim()]
+    });
+    setNewLanguage("");
+    setShowLanguageForm(false);
+  };
 
+  const removeLanguage = (index) => {
+    const updated = localData.languages.filter((_, i) => i !== index);
+    setLocalData({ ...localData, languages: updated });
+  };
+  const addInterest = (e) => {
+    e.preventDefault();
+    if (!newInterest.trim()) return;
+    setLocalData({
+      ...localData,
+      interests: [...localData.interests, newInterest.trim()]
+    });
+    setNewInterest("");
+    setShowInterestForm(false);
+  };
+
+  const removeInterest = (index) => {
+    const updated = localData.interests.filter((_, i) => i !== index);
+    setLocalData({ ...localData, interests: updated });
+  };
   const removeArrayItem = (section, index) => {
     const updated = localData[section].filter((_, i) => i !== index);
     setLocalData({ ...localData, [section]: updated });
@@ -299,6 +344,7 @@ const Template7 = () => {
                       type="text"
                       value={localData.name}
                       onChange={(e) => handleFieldChange("name", e.target.value)}
+                      placeholder="Your Name"
                       style={{
                         fontSize: "2rem",
                         fontWeight: "bold",
@@ -315,6 +361,7 @@ const Template7 = () => {
                       type="text"
                       value={localData.role}
                       onChange={(e) => handleFieldChange("role", e.target.value)}
+                      placeholder="Your Role"
                       style={{
                         fontSize: "1.2rem",
                         color: "#6b7280",
@@ -391,7 +438,6 @@ const Template7 = () => {
                 <p style={{ lineHeight: "1.6", marginBottom: "0" }}>{localData.summary}</p>
               )}
             </div>
-
             {/* Skills */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -415,19 +461,41 @@ const Template7 = () => {
                   </button>
                 )}
               </div>
+
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
                 {localData.skills.map((skill, i) => (
-                  <div key={i} style={{
-                    backgroundColor: "#dbeafe",
-                    color: "#1e40af",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "1rem",
-                    fontSize: "0.875rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem"
-                  }}>
-                    <span>{skill}</span>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        value={skill}
+                        onChange={(e) => {
+                          const updated = [...localData.skills];
+                          updated[i] = e.target.value;
+                          const updatedData = { ...localData, skills: updated };
+                          setLocalData(updatedData);
+                          localStorage.setItem('resumeData', JSON.stringify(updatedData));
+                        }}
+                        placeholder="e.g., JavaScript"
+                        style={{
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                          padding: "6px 10px",
+                          fontSize: "0.9rem",
+                          minWidth: "120px"
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        backgroundColor: "#dbeafe",
+                        color: "#1e40af",
+                        padding: "0.25rem 0.75rem",
+                        borderRadius: "1rem",
+                        fontSize: "0.875rem"
+                      }}>
+                        {skill}
+                      </div>
+                    )}
                     {editMode && (
                       <button
                         onClick={() => removeSkill(i)}
@@ -436,13 +504,8 @@ const Template7 = () => {
                           border: "none",
                           color: "#dc2626",
                           cursor: "pointer",
-                          fontSize: "0.75rem",
-                          padding: "0",
-                          width: "16px",
-                          height: "16px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center"
+                          fontSize: "1rem",
+                          padding: "4px"
                         }}
                       >
                         ×
@@ -453,20 +516,15 @@ const Template7 = () => {
               </div>
             </div>
 
-            {/* Languages */}
+            {/* Language */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                 <h3 style={{ fontWeight: "bold", fontSize: "1.25rem", marginBottom: "0", borderBottom: "2px solid #3b82f6", paddingBottom: "0.25rem" }}>
-                  Languages
+                  Language
                 </h3>
                 {editMode && (
                   <button
-                    onClick={() => {
-                      const newLang = prompt("Add new language:");
-                      if (newLang && newLang.trim()) {
-                        handleFieldChange("languages", [...localData.languages, newLang.trim()]);
-                      }
-                    }}
+                    onClick={() => setShowLanguageForm(true)}
                     style={{
                       backgroundColor: "#10b981",
                       color: "white",
@@ -481,57 +539,70 @@ const Template7 = () => {
                   </button>
                 )}
               </div>
-              {editMode ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {localData.languages.map((lang, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
+                {localData.languages.map((language, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {editMode ? (
                       <input
                         type="text"
-                        value={lang}
+                        value={language}
                         onChange={(e) => {
                           const updated = [...localData.languages];
                           updated[i] = e.target.value;
-                          handleFieldChange("languages", updated);
+                          const updatedData = { ...localData, languages: updated };
+                          setLocalData(updatedData);
+                          localStorage.setItem('resumeData', JSON.stringify(updatedData));
                         }}
-                        style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "4px" }}
-                      />
-                      <button
-                        onClick={() => removeArrayItem("languages", i)}
+                        placeholder="e.g., English"
                         style={{
-                          backgroundColor: "#dc2626",
-                          color: "white",
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                          padding: "6px 10px",
+                          fontSize: "0.9rem",
+                          minWidth: "120px"
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        backgroundColor: "#dbeafe",
+                        color: "#1e40af",
+                        padding: "0.25rem 0.75rem",
+                        borderRadius: "1rem",
+                        fontSize: "0.875rem"
+                      }}>
+                        {language}
+                      </div>
+                    )}
+                    {editMode && (
+                      <button
+                        onClick={() => removeLanguage(i)}
+                        style={{
+                          backgroundColor: "transparent",
                           border: "none",
-                          borderRadius: "50%",
-                          width: "20px",
-                          height: "20px",
+                          color: "#dc2626",
                           cursor: "pointer",
-                          fontSize: "12px"
+                          fontSize: "1rem",
+                          padding: "4px"
                         }}
                       >
                         ×
                       </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>{localData.languages.join(", ")}</p>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Interests */}
+            {/* Interest */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                 <h3 style={{ fontWeight: "bold", fontSize: "1.25rem", marginBottom: "0", borderBottom: "2px solid #3b82f6", paddingBottom: "0.25rem" }}>
-                  Interests
+                  Interest
                 </h3>
                 {editMode && (
                   <button
-                    onClick={() => {
-                      const newInterest = prompt("Add new interest:");
-                      if (newInterest && newInterest.trim()) {
-                        handleFieldChange("interests", [...localData.interests, newInterest.trim()]);
-                      }
-                    }}
+                    onClick={() => setShowInterestForm(true)}
                     style={{
                       backgroundColor: "#10b981",
                       color: "white",
@@ -546,43 +617,60 @@ const Template7 = () => {
                   </button>
                 )}
               </div>
-              {editMode ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {localData.interests.map((interest, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
+                {localData.interests.map((interest, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {editMode ? (
                       <input
                         type="text"
                         value={interest}
                         onChange={(e) => {
                           const updated = [...localData.interests];
                           updated[i] = e.target.value;
-                          handleFieldChange("interests", updated);
+                          const updatedData = { ...localData, interests: updated };
+                          setLocalData(updatedData);
+                          localStorage.setItem('resumeData', JSON.stringify(updatedData));
                         }}
-                        style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "4px" }}
-                      />
-                      <button
-                        onClick={() => removeArrayItem("interests", i)}
+                        placeholder="e.g., Reading"
                         style={{
-                          backgroundColor: "#dc2626",
-                          color: "white",
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                          padding: "6px 10px",
+                          fontSize: "0.9rem",
+                          minWidth: "120px"
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        backgroundColor: "#dbeafe",
+                        color: "#1e40af",
+                        padding: "0.25rem 0.75rem",
+                        borderRadius: "1rem",
+                        fontSize: "0.875rem"
+                      }}>
+                        {interest}
+                      </div>
+                    )}
+                    {editMode && (
+                      <button
+                        onClick={() => removeInterest(i)}
+                        style={{
+                          backgroundColor: "transparent",
                           border: "none",
-                          borderRadius: "50%",
-                          width: "20px",
-                          height: "20px",
+                          color: "#dc2626",
                           cursor: "pointer",
-                          fontSize: "12px"
+                          fontSize: "1rem",
+                          padding: "4px"
                         }}
                       >
                         ×
                       </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>{localData.interests.join(", ")}</p>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-
             {/* Experience */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -925,7 +1013,7 @@ const Template7 = () => {
                           />
                           <input
                             type="text"
-                            value={proj.technologies.join(", ")}
+                            value={Array.isArray(proj.technologies) ? proj.technologies.join(", ") : (proj.technologies || "")}
                             onChange={(e) => handleArrayFieldChange(
                               "projects",
                               idx,
@@ -1055,6 +1143,7 @@ const Template7 = () => {
                   </button>
                 )}
               </div>
+
               {localData.certifications.map((cert, idx) => (
                 <div key={idx} style={{ marginBottom: "1rem", border: editMode ? "1px solid #e5e7eb" : "none", padding: editMode ? "1rem" : "0", borderRadius: "0.5rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -1075,32 +1164,31 @@ const Template7 = () => {
                               padding: "4px"
                             }}
                           />
-                          <div style={{ display: "flex", gap: "0.5rem" }}>
-                            <input
-                              type="text"
-                              value={cert.issuer}
-                              onChange={(e) => handleArrayFieldChange("certifications", idx, "issuer", e.target.value)}
-                              placeholder="Issuer"
-                              style={{
-                                flex: 1,
-                                border: "1px solid #ccc",
-                                borderRadius: "4px",
-                                padding: "4px"
-                              }}
-                            />
-                            <input
-                              type="text"
-                              value={cert.date}
-                              onChange={(e) => handleArrayFieldChange("certifications", idx, "date", e.target.value)}
-                              placeholder="Date"
-                              style={{
-                                flex: 1,
-                                border: "1px solid #ccc",
-                                borderRadius: "4px",
-                                padding: "4px"
-                              }}
-                            />
-                          </div>
+                          <input
+                            type="text"
+                            value={cert.issuer}
+                            onChange={(e) => handleArrayFieldChange("certifications", idx, "issuer", e.target.value)}
+                            placeholder="Issuing Organization"
+                            style={{
+                              width: "100%",
+                              marginBottom: "0.5rem",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
+                              padding: "4px"
+                            }}
+                          />
+                          <input
+                            type="text"
+                            value={cert.date}
+                            onChange={(e) => handleArrayFieldChange("certifications", idx, "date", e.target.value)}
+                            placeholder="Date (e.g., Jan 2023)"
+                            style={{
+                              width: "100%",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
+                              padding: "4px"
+                            }}
+                          />
                         </>
                       ) : (
                         <>
@@ -1149,7 +1237,6 @@ const Template7 = () => {
                 </div>
               ))}
             </div>
-
             {/* Achievements */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -1158,12 +1245,7 @@ const Template7 = () => {
                 </h3>
                 {editMode && (
                   <button
-                    onClick={() => {
-                      const newAchievement = prompt("Add new achievement:");
-                      if (newAchievement && newAchievement.trim()) {
-                        handleFieldChange("achievements", [...localData.achievements, newAchievement.trim()]);
-                      }
-                    }}
+                    onClick={() => setShowAchievementForm(true)}
                     style={{
                       backgroundColor: "#10b981",
                       color: "white",
@@ -1176,6 +1258,8 @@ const Template7 = () => {
                     Add Achievement
                   </button>
                 )}
+                {/* Certifications */}
+
               </div>
               {editMode ? (
                 <div>
@@ -1189,6 +1273,7 @@ const Template7 = () => {
                           updated[i] = e.target.value;
                           handleFieldChange("achievements", updated);
                         }}
+                        placeholder="e.g won 1st place in xyz hackathon(2024)"
                         style={{
                           flex: 1,
                           border: "1px solid #ccc",
@@ -1215,7 +1300,7 @@ const Template7 = () => {
                   ))}
                 </div>
               ) : (
-                <ul style={{ listStyle: "disc", marginLeft: "1.5rem" }}>
+                <ul style={{ marginLeft: "1.5rem" }}>
                   {localData.achievements.map((achievement, i) => (
                     <li key={i} style={{ marginBottom: "0.25rem" }}>{achievement}</li>
                   ))}
@@ -1262,7 +1347,36 @@ const Template7 = () => {
               </>
             ) : (
               <button
-                onClick={() => setEditMode(true)}
+                onClick={() => {
+                  setEditMode(true);
+                  setLocalData(prev => ({
+                    ...prev,
+                    experience: prev?.experience && prev.experience.length
+                      ? prev.experience
+                      : [{ title: "", companyName: "", date: "", companyLocation: "", accomplishment: [] }],
+                    certifications: prev?.certifications && prev.certifications.length
+                      ? prev.certifications
+                      : [{ title: "", issuer: "", date: "" }],
+                    education: prev?.education && prev.education.length
+                      ? prev.education
+                      : [{ degree: "", institution: "", duration: "", location: "" }],
+                    achievements: prev?.achievements && prev.achievements.length
+                      ? prev.achievements
+                      : [""],
+                    projects: prev?.projects && prev.projects.length
+                      ? prev.projects
+                      : [{ name: "", description: "", technologies: "", link: "", github: "" }],
+                    skills: prev?.skills && prev.skills.length
+                      ? prev.skills
+                      : [""],
+                    languages: prev?.languages && prev.languages.length
+                      ? prev.languages
+                      : [""],
+                    interests: prev?.interests && prev.interests.length
+                      ? prev.interests
+                      : [""]
+                  }));
+                }}
                 style={{
                   backgroundColor: "#3b82f6",
                   color: "white",
@@ -1283,558 +1397,793 @@ const Template7 = () => {
 
       {/* Modal Forms */}
       {/* Skill Form Modal */}
-      {showSkillForm && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: "1000"
-        }}>
+      {
+        showSkillForm && (
           <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            width: "90%",
-            maxWidth: "400px"
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>Add New Skill</h3>
-            <form onSubmit={addSkill}>
-              <input
-                type="text"
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Skill name"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "1rem"
-                }}
-                autoFocus
-              />
-              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSkillForm(false);
-                    setNewSkill("");
-                  }}
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "400px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>Add New Skill</h3>
+              <form onSubmit={addSkill}>
+                <input
+                  type="text"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  placeholder="Skill name"
                   style={{
-                    backgroundColor: "#6b7280",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "1rem"
                   }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "0.25rem",
-                    cursor: "pointer"
-                  }}
-                >
-                  Add
-                </button>
-              </div>
-            </form>
+                  autoFocus
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSkillForm(false);
+                      setNewSkill("");
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-
+        )
+      }
+      {/* language Form Modal */}
+      {
+        showLanguageForm && (
+          <div style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
+          }}>
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "400px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>Add New Language</h3>
+              <form onSubmit={addLanguage}>
+                <input
+                  type="text"
+                  value={newLanguage}
+                  onChange={(e) => setNewLanguage(e.target.value)}
+                  placeholder="Langage name"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                  autoFocus
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowLanguageForm(false);
+                      setNewLanguage("");
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )
+      }
+      {
+        showInterestForm && (
+          <div style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
+          }}>
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "400px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>Add Interest</h3>
+              <form onSubmit={addInterest}>
+                <input
+                  type="text"
+                  value={newInterest}
+                  onChange={(e) => setNewInterest(e.target.value)}
+                  placeholder="Interest name"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                  autoFocus
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowInterestForm(false);
+                      setNewInterest("");
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )
+      }
       {/* Experience Form Modal */}
-      {showExperienceForm && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: "1000"
-        }}>
+      {
+        showExperienceForm && (
           <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            width: "90%",
-            maxWidth: "500px",
-            maxHeight: "90vh",
-            overflowY: "auto"
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
-              {editingExperience !== null ? "Edit Experience" : "Add New Experience"}
-            </h3>
-            <form onSubmit={addOrUpdateExperience}>
-              <input
-                type="text"
-                value={newExperience.title}
-                onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
-                placeholder="Job Title"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newExperience.companyName}
-                onChange={(e) => setNewExperience({ ...newExperience, companyName: e.target.value })}
-                placeholder="Company Name"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newExperience.date}
-                onChange={(e) => setNewExperience({ ...newExperience, date: e.target.value })}
-                placeholder="Date Range (e.g., 2020 - Present)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newExperience.companyLocation}
-                onChange={(e) => setNewExperience({ ...newExperience, companyLocation: e.target.value })}
-                placeholder="Location"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <textarea
-                value={newExperience.accomplishment}
-                onChange={(e) => setNewExperience({ ...newExperience, accomplishment: e.target.value })}
-                placeholder="Accomplishments (one per line)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "1rem",
-                  minHeight: "100px",
-                  resize: "vertical"
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowExperienceForm(false);
-                    setNewExperience({ title: "", companyName: "", date: "", companyLocation: "", accomplishment: "" });
-                    setEditingExperience(null);
-                  }}
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "500px",
+              maxHeight: "90vh",
+              overflowY: "auto"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
+                {editingExperience !== null ? "Edit Experience" : "Add New Experience"}
+              </h3>
+              <form onSubmit={addOrUpdateExperience}>
+                <input
+                  type="text"
+                  value={newExperience.title}
+                  onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
+                  placeholder="Job Title"
                   style={{
-                    backgroundColor: "#6b7280",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+                />
+                <input
+                  type="text"
+                  value={newExperience.companyName}
+                  onChange={(e) => setNewExperience({ ...newExperience, companyName: e.target.value })}
+                  placeholder="Company Name"
                   style={{
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  {editingExperience !== null ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
+                />
+                <input
+                  type="text"
+                  value={newExperience.date}
+                  onChange={(e) => setNewExperience({ ...newExperience, date: e.target.value })}
+                  placeholder="Date Range (e.g., 2020 - Present)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "0.5rem"
+                  }}
+                />
+                <input
+                  type="text"
+                  value={newExperience.companyLocation}
+                  onChange={(e) => setNewExperience({ ...newExperience, companyLocation: e.target.value })}
+                  placeholder="Location"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "0.5rem"
+                  }}
+                />
+                <textarea
+                  value={newExperience.accomplishment}
+                  onChange={(e) => setNewExperience({ ...newExperience, accomplishment: e.target.value })}
+                  placeholder="Accomplishments (one per line)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem",
+                    minHeight: "100px",
+                    resize: "vertical"
+                  }}
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExperienceForm(false);
+                      setNewExperience({ title: "", companyName: "", date: "", companyLocation: "", accomplishment: "" });
+                      setEditingExperience(null);
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {editingExperience !== null ? "Update" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Education Form Modal */}
-      {showEducationForm && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: "1000"
-        }}>
+      {
+        showEducationForm && (
           <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            width: "90%",
-            maxWidth: "500px"
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
-              {editingEducation !== null ? "Edit Education" : "Add New Education"}
-            </h3>
-            <form onSubmit={addOrUpdateEducation}>
-              <input
-                type="text"
-                value={newEducation.degree}
-                onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
-                placeholder="Degree"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newEducation.institution}
-                onChange={(e) => setNewEducation({ ...newEducation, institution: e.target.value })}
-                placeholder="Institution"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newEducation.duration}
-                onChange={(e) => setNewEducation({ ...newEducation, duration: e.target.value })}
-                placeholder="Duration (e.g., 2016 - 2020)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newEducation.location}
-                onChange={(e) => setNewEducation({ ...newEducation, location: e.target.value })}
-                placeholder="Location"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "1rem"
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowEducationForm(false);
-                    setNewEducation({ degree: "", institution: "", duration: "", location: "" });
-                    setEditingEducation(null);
-                  }}
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "500px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
+                {editingEducation !== null ? "Edit Education" : "Add New Education"}
+              </h3>
+              <form onSubmit={addOrUpdateEducation}>
+                <input
+                  type="text"
+                  value={newEducation.degree}
+                  onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
+                  placeholder="Degree"
                   style={{
-                    backgroundColor: "#6b7280",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+                />
+                <input
+                  type="text"
+                  value={newEducation.institution}
+                  onChange={(e) => setNewEducation({ ...newEducation, institution: e.target.value })}
+                  placeholder="Institution"
                   style={{
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  {editingEducation !== null ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
+                />
+                <input
+                  type="text"
+                  value={newEducation.duration}
+                  onChange={(e) => setNewEducation({ ...newEducation, duration: e.target.value })}
+                  placeholder="Duration (e.g., 2016 - 2020)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "0.5rem"
+                  }}
+                />
+                <input
+                  type="text"
+                  value={newEducation.location}
+                  onChange={(e) => setNewEducation({ ...newEducation, location: e.target.value })}
+                  placeholder="Location"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEducationForm(false);
+                      setNewEducation({ degree: "", institution: "", duration: "", location: "" });
+                      setEditingEducation(null);
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {editingEducation !== null ? "Update" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Project Form Modal */}
-      {showProjectForm && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: "1000"
-        }}>
+      {
+        showProjectForm && (
           <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            width: "90%",
-            maxWidth: "500px",
-            maxHeight: "90vh",
-            overflowY: "auto"
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
-              {editingProject !== null ? "Edit Project" : "Add New Project"}
-            </h3>
-            <form onSubmit={addOrUpdateProject}>
-              <input
-                type="text"
-                value={newProject.name}
-                onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                placeholder="Project Name"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <textarea
-                value={newProject.description}
-                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                placeholder="Project Description"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem",
-                  minHeight: "80px",
-                  resize: "vertical"
-                }}
-              />
-              <input
-                type="text"
-                value={newProject.technologies}
-                onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
-                placeholder="Technologies (comma-separated)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="url"
-                value={newProject.link}
-                onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
-                placeholder="Live Demo URL (optional)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="url"
-                value={newProject.github}
-                onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
-                placeholder="GitHub URL (optional)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "1rem"
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowProjectForm(false);
-                    setNewProject({ name: "", description: "", technologies: "", link: "", github: "" });
-                    setEditingProject(null);
-                  }}
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "500px",
+              maxHeight: "90vh",
+              overflowY: "auto"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
+                {editingProject !== null ? "Edit Project" : "Add New Project"}
+              </h3>
+              <form onSubmit={addOrUpdateProject}>
+                <input
+                  type="text"
+                  value={newProject.name}
+                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                  placeholder="Project Name"
                   style={{
-                    backgroundColor: "#6b7280",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+                />
+                <textarea
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                  placeholder="Project Description"
                   style={{
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem",
+                    minHeight: "80px",
+                    resize: "vertical"
                   }}
-                >
-                  {editingProject !== null ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
+                />
+                <input
+                  type="text"
+                  value={newProject.technologies}
+                  onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
+                  placeholder="Technologies (comma-separated)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "0.5rem"
+                  }}
+                />
+                <input
+                  type="url"
+                  value={newProject.link}
+                  onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
+                  placeholder="Live Demo URL (optional)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "0.5rem"
+                  }}
+                />
+                <input
+                  type="url"
+                  value={newProject.github}
+                  onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
+                  placeholder="GitHub URL (optional)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProjectForm(false);
+                      setNewProject({ name: "", description: "", technologies: "", link: "", github: "" });
+                      setEditingProject(null);
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {editingProject !== null ? "Update" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Certification Form Modal */}
-      {showCertificationForm && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: "1000"
-        }}>
+      {
+        showCertificationForm && (
           <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            width: "90%",
-            maxWidth: "500px"
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
-              {editingCertification !== null ? "Edit Certification" : "Add New Certification"}
-            </h3>
-            <form onSubmit={addOrUpdateCertification}>
-              <input
-                type="text"
-                value={newCertification.title}
-                onChange={(e) => setNewCertification({ ...newCertification, title: e.target.value })}
-                placeholder="Certification Title"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newCertification.issuer}
-                onChange={(e) => setNewCertification({ ...newCertification, issuer: e.target.value })}
-                placeholder="Issuing Organization"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <input
-                type="text"
-                value={newCertification.date}
-                onChange={(e) => setNewCertification({ ...newCertification, date: e.target.value })}
-                placeholder="Date (e.g., Jan 2023)"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "0.25rem",
-                  marginBottom: "1rem"
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowCertificationForm(false);
-                    setNewCertification({ title: "", issuer: "", date: "" });
-                    setEditingCertification(null);
-                  }}
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "500px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
+                {editingCertification !== null ? "Edit Certification" : "Add New Certification"}
+              </h3>
+              <form onSubmit={addOrUpdateCertification}>
+                <input
+                  type="text"
+                  value={newCertification.title}
+                  onChange={(e) => setNewCertification({ ...newCertification, title: e.target.value })}
+                  placeholder="Certification Title"
                   style={{
-                    backgroundColor: "#6b7280",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+                />
+                <input
+                  type="text"
+                  value={newCertification.issuer}
+                  onChange={(e) => setNewCertification({ ...newCertification, issuer: e.target.value })}
+                  placeholder="Issuing Organization"
                   style={{
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    border: "none",
-                    padding: "0.5rem 1rem",
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
                     borderRadius: "0.25rem",
-                    cursor: "pointer"
+                    marginBottom: "0.5rem"
                   }}
-                >
-                  {editingCertification !== null ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
+                />
+                <input
+                  type="text"
+                  value={newCertification.date}
+                  onChange={(e) => setNewCertification({ ...newCertification, date: e.target.value })}
+                  placeholder="Date (e.g., Jan 2023)"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCertificationForm(false);
+                      setNewCertification({ title: "", issuer: "", date: "" });
+                      setEditingCertification(null);
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {editingCertification !== null ? "Update" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-
+        )
+      }
+      {/* Achievement Form Modal */}
+      {
+        showAchievementForm && (
+          <div style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "1000"
+          }}>
+            <div style={{
+              backgroundColor: "white",
+              padding: "2rem",
+              borderRadius: "0.5rem",
+              width: "90%",
+              maxWidth: "500px"
+            }}>
+              <h3 style={{ marginBottom: "1rem", fontSize: "1.25rem", fontWeight: "bold" }}>
+                {editingAchievement !== null ? "Edit Achievement" : "Add Achievement"}
+              </h3>
+              <form onSubmit={addOrUpdateAchievement}>
+                <input
+                  type="text"
+                  value={newAchievement}
+                  onChange={(e) => setNewAchievement(e.target.value)}
+                  placeholder="Achievement description"
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    marginBottom: "1rem"
+                  }}
+                  autoFocus
+                />
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAchievementForm(false);
+                      setNewAchievement("");
+                      setEditingAchievement(null);
+                    }}
+                    style={{
+                      backgroundColor: "#6b7280",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {editingAchievement !== null ? "Update" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )
+      }
       {/* Responsive Styles */}
       <style>{`
         @media (max-width: 768px) {
@@ -1914,8 +2263,8 @@ const Template7 = () => {
           }
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 
-export default Template7;
+export default Template11;

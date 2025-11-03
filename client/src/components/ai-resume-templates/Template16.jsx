@@ -132,86 +132,7 @@ const Template16 = () => {
                 )}
               </div>
 
-              <div style={{ textAlign: "right", flex: 1 }}>
-                {editMode ? (
-                  <>
-                    <input
-                      type="text"
-                      value={localData.phone || ""}
-                      onChange={(e) => handleFieldChange("phone", e.target.value)}
-                      style={{
-                        fontSize: "0.875rem",
-                        color: "#6b7280",
-                        marginBottom: "0.25rem",
-                        width: "100%",
-                        border: "1px solid #d1d5db",
-                        padding: "0.25rem",
-                        borderRadius: "0.375rem",
-                      }}
-                      placeholder="Phone"
-                    />
-                    <input
-                      type="text"
-                      value={localData.email || ""}
-                      onChange={(e) => handleFieldChange("email", e.target.value)}
-                      style={{
-                        fontSize: "0.875rem",
-                        color: "#6b7280",
-                        marginBottom: "0.25rem",
-                        width: "100%",
-                        border: "1px solid #d1d5db",
-                        padding: "0.25rem",
-                        borderRadius: "0.375rem",
-                      }}
-                      placeholder="Email"
-                    />
-                    <input
-                      type="text"
-                      value={localData.linkedin || ""}
-                      onChange={(e) => handleFieldChange("linkedin", e.target.value)}
-                      style={{
-                        fontSize: "0.875rem",
-                        color: "#6b7280",
-                        marginBottom: "0.25rem",
-                        width: "100%",
-                        border: "1px solid #d1d5db",
-                        padding: "0.25rem",
-                        borderRadius: "0.375rem",
-                      }}
-                      placeholder="LinkedIn"
-                    />
-                    <input
-                      type="text"
-                      value={localData.location || ""}
-                      onChange={(e) => handleFieldChange("location", e.target.value)}
-                      style={{
-                        fontSize: "0.875rem",
-                        color: "#6b7280",
-                        width: "100%",
-                        border: "1px solid #d1d5db",
-                        padding: "0.25rem",
-                        borderRadius: "0.375rem",
-                      }}
-                      placeholder="Location"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                      {localData.phone || "Phone"}
-                    </p>
-                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                      {localData.email || "Email"}
-                    </p>
-                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                      {localData.linkedin || "LinkedIn"}
-                    </p>
-                    <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                      {localData.location || "Location"}
-                    </p>
-                  </>
-                )}
-              </div>
+           
             </div>
 
             {/* Summary Section */}
@@ -308,273 +229,319 @@ const Template16 = () => {
               )}
             </div>
 
-            {/* Experience Section */}
-            <div style={{ marginBottom: "2rem" }}>
-              <h3
-                style={{
-                  fontSize: "1.25rem",
-                  fontWeight: "bold",
-                  color: "#1f2937",
-                  marginBottom: "1rem",
-                  borderBottom: "1px solid #e5e7eb",
-                  paddingBottom: "0.5rem",
-                }}
-              >
-                Professional Experience
-              </h3>
-              {localData.experience && localData.experience.length > 0 ? (
-                localData.experience.map((exp, index) => (
-                  <div key={index} style={{ marginBottom: "1.5rem" }}>
-                    {editMode ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={exp.title || ""}
-                          onChange={(e) => {
-                            const newExp = [...localData.experience];
-                            newExp[index] = { ...newExp[index], title: e.target.value };
-                            handleFieldChange("experience", newExp);
-                          }}
-                          style={{
-                            fontSize: "1.125rem",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                            marginBottom: "0.25rem",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Job Title"
-                        />
-                        <input
-                          type="text"
-                          value={exp.company || ""}
-                          onChange={(e) => {
-                            const newExp = [...localData.experience];
-                            newExp[index] = { ...newExp[index], company: e.target.value };
-                            handleFieldChange("experience", newExp);
-                          }}
-                          style={{
-                            fontSize: "1rem",
-                            color: "#3b82f6",
-                            fontWeight: "600",
-                            marginBottom: "0.25rem",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Company"
-                        />
-                        <input
-                          type="text"
-                          value={exp.duration || ""}
-                          onChange={(e) => {
-                            const newExp = [...localData.experience];
-                            newExp[index] = { ...newExp[index], duration: e.target.value };
-                            handleFieldChange("experience", newExp);
-                          }}
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#6b7280",
-                            marginBottom: "0.5rem",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Duration"
-                        />
-                        <textarea
-                          value={exp.description || ""}
-                          onChange={(e) => {
-                            const newExp = [...localData.experience];
-                            newExp[index] = { ...newExp[index], description: e.target.value };
-                            handleFieldChange("experience", newExp);
-                          }}
-                          style={{
-                            width: "100%",
-                            minHeight: "80px",
-                            padding: "0.5rem",
-                            border: "1px solid #d1d5db",
-                            borderRadius: "0.375rem",
-                            fontSize: "0.875rem",
-                            lineHeight: "1.5",
-                            resize: "vertical",
-                          }}
-                          placeholder="Job description..."
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <h4
-                          style={{
-                            fontSize: "1.125rem",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {exp.title || "Job Title"}
-                        </h4>
-                        <p
-                          style={{
-                            fontSize: "1rem",
-                            color: "#3b82f6",
-                            fontWeight: "600",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {exp.company || "Company"}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#6b7280",
-                            marginBottom: "0.5rem",
-                          }}
-                        >
-                          {exp.duration || "Duration"}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            lineHeight: "1.6",
-                            color: "#374151",
-                          }}
-                        >
-                          {exp.description || "Job description"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p style={{ color: "#6b7280", fontStyle: "italic" }}>
-                  No experience listed
-                </p>
-              )}
-            </div>
+          {/* Experience Section */}
+<div style={{ marginBottom: "2rem" }}>
+  <h3
+    style={{
+      fontSize: "1.25rem",
+      fontWeight: "bold",
+      color: "#1f2937",
+      marginBottom: "1rem",
+      borderBottom: "1px solid #e5e7eb",
+      paddingBottom: "0.5rem",
+    }}
+  >
+    Professional Experience
+  </h3>
 
-            {/* Education Section */}
-            <div style={{ marginBottom: "2rem" }}>
-              <h3
-                style={{
-                  fontSize: "1.25rem",
-                  fontWeight: "bold",
-                  color: "#1f2937",
-                  marginBottom: "1rem",
-                  borderBottom: "1px solid #e5e7eb",
-                  paddingBottom: "0.5rem",
-                }}
-              >
-                Education
-              </h3>
-              {localData.education && localData.education.length > 0 ? (
-                localData.education.map((edu, index) => (
-                  <div key={index} style={{ marginBottom: "1rem" }}>
-                    {editMode ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={edu.degree || ""}
-                          onChange={(e) => {
-                            const newEdu = [...localData.education];
-                            newEdu[index] = { ...newEdu[index], degree: e.target.value };
-                            handleFieldChange("education", newEdu);
-                          }}
-                          style={{
-                            fontSize: "1rem",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                            marginBottom: "0.25rem",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Degree"
-                        />
-                        <input
-                          type="text"
-                          value={edu.institution || ""}
-                          onChange={(e) => {
-                            const newEdu = [...localData.education];
-                            newEdu[index] = { ...newEdu[index], institution: e.target.value };
-                            handleFieldChange("education", newEdu);
-                          }}
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#3b82f6",
-                            fontWeight: "600",
-                            marginBottom: "0.25rem",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Institution"
-                        />
-                        <input
-                          type="text"
-                          value={edu.year || ""}
-                          onChange={(e) => {
-                            const newEdu = [...localData.education];
-                            newEdu[index] = { ...newEdu[index], year: e.target.value };
-                            handleFieldChange("education", newEdu);
-                          }}
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#6b7280",
-                            width: "100%",
-                            border: "1px solid #d1d5db",
-                            padding: "0.5rem",
-                            borderRadius: "0.375rem",
-                          }}
-                          placeholder="Year"
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <h4
-                          style={{
-                            fontSize: "1rem",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {edu.degree || "Degree"}
-                        </h4>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#3b82f6",
-                            fontWeight: "600",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {edu.institution || "Institution"}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#6b7280",
-                          }}
-                        >
-                          {edu.year || "Year"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p style={{ color: "#6b7280", fontStyle: "italic" }}>
-                  No education listed
-                </p>
-              )}
-            </div>
+  {localData.experience && localData.experience.length > 0 ? (
+    localData.experience.map((exp, index) => (
+      <div
+        key={index}
+        style={{
+          marginBottom: "1.5rem",
+          border: "1px solid #e5e7eb",
+          borderRadius: "0.5rem",
+          padding: "1rem",
+          backgroundColor: editMode ? "#f9fafb" : "transparent",
+          position: "relative",
+        }}
+      >
+        {editMode && (
+          <button
+            onClick={() => {
+              const newExp = localData.experience.filter((_, i) => i !== index);
+              handleFieldChange("experience", newExp);
+            }}
+            style={{
+              position: "absolute",
+              top: "0.5rem",
+              right: "0.5rem",
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              border: "none",
+              borderRadius: "0.25rem",
+              padding: "0.25rem 0.5rem",
+              cursor: "pointer",
+              fontSize: "0.75rem",
+            }}
+          >
+            ❌ Remove
+          </button>
+        )}
+
+        {editMode ? (
+          <div>
+            <input
+              type="text"
+              value={exp.title || ""}
+              onChange={(e) => {
+                const newExp = [...localData.experience];
+                newExp[index] = { ...newExp[index], title: e.target.value };
+                handleFieldChange("experience", newExp);
+              }}
+              placeholder="Job Title"
+              style={{
+                fontSize: "1.125rem",
+                fontWeight: "bold",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input
+              type="text"
+              value={exp.company || ""}
+              onChange={(e) => {
+                const newExp = [...localData.experience];
+                newExp[index] = { ...newExp[index], company: e.target.value };
+                handleFieldChange("experience", newExp);
+              }}
+              placeholder="Company"
+              style={{
+                fontSize: "1rem",
+                color: "#3b82f6",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input
+              type="text"
+              value={exp.duration || ""}
+              onChange={(e) => {
+                const newExp = [...localData.experience];
+                newExp[index] = { ...newExp[index], duration: e.target.value };
+                handleFieldChange("experience", newExp);
+              }}
+              placeholder="Duration"
+              style={{
+                fontSize: "0.875rem",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <textarea
+              value={exp.description || ""}
+              onChange={(e) => {
+                const newExp = [...localData.experience];
+                newExp[index] = { ...newExp[index], description: e.target.value };
+                handleFieldChange("experience", newExp);
+              }}
+              placeholder="Job description..."
+              style={{
+                width: "100%",
+                minHeight: "80px",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.375rem",
+                padding: "0.5rem",
+                fontSize: "0.875rem",
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            <h4 style={{ fontSize: "1.125rem", fontWeight: "bold" }}>{exp.title || "Job Title"}</h4>
+            <p style={{ color: "#3b82f6", fontWeight: "600" }}>{exp.company || "Company"}</p>
+            <p style={{ color: "#6b7280" }}>{exp.duration || "Duration"}</p>
+            <p style={{ fontSize: "0.875rem", color: "#374151" }}>
+              {exp.description || "Job description"}
+            </p>
+          </>
+        )}
+      </div>
+    ))
+  ) : (
+    <p style={{ color: "#6b7280", fontStyle: "italic" }}>No experience listed</p>
+  )}
+
+  {editMode && (
+    <button
+      onClick={() => {
+        const newExp = [
+          ...(localData.experience || []),
+          { title: "", company: "", duration: "", description: "" },
+        ];
+        handleFieldChange("experience", newExp);
+      }}
+      style={{
+        backgroundColor: "#10b981",
+        color: "#fff",
+        padding: "0.5rem 1rem",
+        borderRadius: "0.375rem",
+        border: "none",
+        cursor: "pointer",
+        fontWeight: "500",
+      }}
+    >
+      ➕ Add Experience
+    </button>
+  )}
+</div>
+
+{/* Education Section */}
+<div style={{ marginBottom: "2rem" }}>
+  <h3
+    style={{
+      fontSize: "1.25rem",
+      fontWeight: "bold",
+      color: "#1f2937",
+      marginBottom: "1rem",
+      borderBottom: "1px solid #e5e7eb",
+      paddingBottom: "0.5rem",
+    }}
+  >
+    Education
+  </h3>
+
+  {localData.education && localData.education.length > 0 ? (
+    localData.education.map((edu, index) => (
+      <div
+        key={index}
+        style={{
+          marginBottom: "1.5rem",
+          border: "1px solid #e5e7eb",
+          borderRadius: "0.5rem",
+          padding: "1rem",
+          backgroundColor: editMode ? "#f9fafb" : "transparent",
+          position: "relative",
+        }}
+      >
+        {editMode && (
+          <button
+            onClick={() => {
+              const newEdu = localData.education.filter((_, i) => i !== index);
+              handleFieldChange("education", newEdu);
+            }}
+            style={{
+              position: "absolute",
+              top: "0.5rem",
+              right: "0.5rem",
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              border: "none",
+              borderRadius: "0.25rem",
+              padding: "0.25rem 0.5rem",
+              cursor: "pointer",
+              fontSize: "0.75rem",
+            }}
+          >
+            ❌ Remove
+          </button>
+        )}
+
+        {editMode ? (
+          <div>
+            <input
+              type="text"
+              value={edu.degree || ""}
+              onChange={(e) => {
+                const newEdu = [...localData.education];
+                newEdu[index] = { ...newEdu[index], degree: e.target.value };
+                handleFieldChange("education", newEdu);
+              }}
+              placeholder="Degree"
+              style={{
+                fontSize: "1rem",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input
+              type="text"
+              value={edu.institution || ""}
+              onChange={(e) => {
+                const newEdu = [...localData.education];
+                newEdu[index] = { ...newEdu[index], institution: e.target.value };
+                handleFieldChange("education", newEdu);
+              }}
+              placeholder="Institution"
+              style={{
+                fontSize: "0.875rem",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input
+              type="text"
+              value={edu.year || ""}
+              onChange={(e) => {
+                const newEdu = [...localData.education];
+                newEdu[index] = { ...newEdu[index], year: e.target.value };
+                handleFieldChange("education", newEdu);
+              }}
+              placeholder="Year"
+              style={{
+                fontSize: "0.875rem",
+                width: "100%",
+                border: "1px solid #d1d5db",
+                padding: "0.5rem",
+                borderRadius: "0.375rem",
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            <h4 style={{ fontSize: "1rem", fontWeight: "bold" }}>{edu.degree || "Degree"}</h4>
+            <p style={{ color: "#3b82f6", fontWeight: "600" }}>
+              {edu.institution || "Institution"}
+            </p>
+            <p style={{ color: "#6b7280" }}>{edu.year || "Year"}</p>
+          </>
+        )}
+      </div>
+    ))
+  ) : (
+    <p style={{ color: "#6b7280", fontStyle: "italic" }}>No education listed</p>
+  )}
+
+  {editMode && (
+    <button
+      onClick={() => {
+        const newEdu = [
+          ...(localData.education || []),
+          { degree: "", institution: "", year: "" },
+        ];
+        handleFieldChange("education", newEdu);
+      }}
+      style={{
+        backgroundColor: "#10b981",
+        color: "#fff",
+        padding: "0.5rem 1rem",
+        borderRadius: "0.375rem",
+        border: "none",
+        cursor: "pointer",
+        fontWeight: "500",
+      }}
+    >
+      ➕ Add Education
+    </button>
+  )}
+</div>
+
 
             {/* Edit Mode Controls */}
             {editMode && (
@@ -624,10 +591,11 @@ const Template16 = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "center",
+                  justifyContent: "flex-end",
                   marginTop: "2rem",
                   paddingTop: "1rem",
                   borderTop: "1px solid #e5e7eb",
+                  marginRight: "2rem",
                 }}
               >
                 <button

@@ -8,7 +8,25 @@ import temp5 from '../../assets/images/temp5.jpg';
 import temp6 from '../../assets/images/temp6.png';
 import temp7 from '../../assets/images/temp7.png';
 import temp8 from '../../assets/images/temp8.jpg';
-import temp9 from '../../assets/images/temp9.jpg';
+import temp9 from '../../assets/images/temp9.png';
+import temp10 from '../../assets/images/temp10.png';
+import temp11 from '../../assets/images/temp11.png';
+
+import temp13 from '../../assets/images/temp13.png';
+import temp14 from '../../assets/images/temp14.png';
+import temp15 from '../../assets/images/temp15.png';
+import temp16 from '../../assets/images/temp16.png';
+import temp17 from '../../assets/images/temp17.png';
+import temp18 from '../../assets/images/temp18.png';
+import temp19 from '../../assets/images/temp19.png';
+import temp20 from '../../assets/images/temp20.png';
+import temp21 from '../../assets/images/temp21.png';
+import temp22 from '../../assets/images/temp22.png';
+import temp23 from '../../assets/images/temp23.png';
+import temp26 from '../../assets/images/temp26.png';
+import temp28 from '../../assets/images/temp28.png';
+import temp29 from '../../assets/images/temp29.png';
+import temp30 from '../../assets/images/temp30.jpg';
  
 
 import { useNavigate } from 'react-router-dom';
@@ -82,14 +100,14 @@ const WithoutAiTemp = () => {
     {
       id: 10,
       name: 'Classic Professional-10',
-      preview: temp8,
+      preview: temp10,
       description: 'Clean traditional layout ideal for corporate and technical roles.',
       url: '/resume-template10'
     },
     {
       id: 11,
       name: 'Professional Executive-11',
-      preview: temp8,
+      preview: temp11,
       description: 'Clean, professional layout showcasing marketing expertise and career achievements effectively.',
       url: '/template11'
     },
@@ -110,70 +128,70 @@ const WithoutAiTemp = () => {
     {
       id: 14,
       name: 'Laboratory Specialist Resume-14',
-      preview: temp8,
+      preview: temp14,
       description: 'Precise, results-driven layout crafted for lab and clinical professionals.',
       url: '/template14'
     },
     {
       id: 15,
       name: 'Finance Analyst Resume-15',
-      preview: temp8,
+      preview: temp15,
       description: 'Crisp, professional format tailored for finance, budgeting, and analysis roles',
       url: '/template15'
     },
     {
       id: 16,
       name: 'Fiscal Visionary & Strategic Performance Architect-16',
-      preview: temp8,
+      preview: temp16,
       description: 'Crafting financial clarity, accelerating growth, and engineering operational excellence',
       url: '/resume-template16'
     },
     {
       id: 17,
       name: 'Modern Web Developer Resume Template-17',
-      preview: temp8,
+      preview: temp17,
       description: 'Interactive resume template with vibrant design and essential developer details.',
       url: '/resume-template17'
     },
     {
       id: 18,
       name: 'Resume Preview-18',
-      preview: temp8,
+      preview: temp18,
       description: 'Clean and modern layout tailored for retail sales job seekers.',
       url: '/resume-template18'
     },
     {
       id: 19,
       name: 'Experience Highlight-19',
-      preview: temp8,
+      preview: temp19,
       description: 'Showcases impactful achievements in retail sales with measurable success.',
       url: '/template19'
     },
     {
       id: 20,
       name: 'Retail Expert-20',
-      preview: temp8,
+      preview: temp20,
       description: 'Dynamic sales professional excelling in service, merchandising, and customer engagement.',
       url: '/template20'
     },
     {
       id: 21,
       name: 'Sales Specialist-21',
-      preview: temp8,
+      preview: temp21,
       description: 'Driven retail expert excelling in sales, service, and visual merchandising.',
       url: '/template21'
     },
     {
       id: 22,
       name: 'Legal Intern-22',
-      preview: temp8,
+      preview: temp22,
       description: 'Motivated legal intern with strong research, writing, and analytical skills.',
       url: '/template22'
     },
     {
       id: 23,
       name: 'Creative Visionary-23',
-      preview: temp8,
+      preview: temp23,
       description: 'Delivers compelling freelance design solutions with innovation, strategy, and style.',
       url: '/template23'
     },
@@ -194,7 +212,7 @@ const WithoutAiTemp = () => {
     {
       id: 26,
       name: 'Code Crafter-26',
-      preview: temp8,
+      preview: temp26,
       description: 'Dedicated developer skilled in React, CSS, and problem solving.',
       url: '/template26'
     },
@@ -208,14 +226,14 @@ const WithoutAiTemp = () => {
     {
       id: 28,
       name: 'Code Architect-28',
-      preview: temp8,
+      preview: temp28,
       description: 'Versatile fullstack developer crafting efficient, scalable, and modern applications.',
       url: '/resume-template28'
     },
     {
       id: 29,
       name: 'UI Crafter-29',
-      preview: temp8,
+      preview: temp29,
       description: 'Designs seamless user experiences with clean, responsive, modern web interfaces.',
       url: '/resume-template29'
     },

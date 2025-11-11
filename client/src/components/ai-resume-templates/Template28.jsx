@@ -1,270 +1,71 @@
-import React, { useState, useRef, useEffect } from "react";
-import Sidebar from "../Sidebar/Sidebar";
-import Navbar from "../Navbar/Navbar";
-import { useResume } from "../../context/ResumeContext";
-import html2pdf from "html2pdf.js";
+import React from "react";
 
 const Template28 = () => {
-  const resumeRef = useRef(null);
-  const { resumeData, setResumeData } = useResume();
-  const [editMode, setEditMode] = useState(false);
-  const [localData, setLocalData] = useState(resumeData);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  useEffect(() => {
-    setLocalData(resumeData);
-  }, [resumeData]);
-
-  const handleFieldChange = (field, value) => {
-    const updatedData = { ...localData, [field]: value };
-    setLocalData(updatedData);
-    localStorage.setItem("resumeData", JSON.stringify(updatedData));
-  };
-
-  const handleSave = () => {
-    setResumeData(localData);
-    setEditMode(false);
-  };
-
-  const handleCancel = () => {
-    setLocalData(resumeData);
-    setEditMode(false);
-  };
-
-  const handleDownloadPDF = () => {
-    setIsDownloading(true);
-    setTimeout(() => {
-      if (resumeRef.current) {
-        html2pdf().from(resumeRef.current).save();
-      }
-      setIsDownloading(false);
-    }, 100);
-  };
-
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#edf2f7" }}>
-      <Navbar />
-      <div style={{ display: "flex" }}>
-        <Sidebar />
-        <div
-          style={{
-            flexGrow: 1,
-            padding: "3rem",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            ref={resumeRef}
-            style={{
-              backgroundColor: "#ffffff",
-              color: "#1a202c",
-              maxWidth: "900px",
-              width: "100%",
-              boxShadow: "0 15px 35px rgba(0,0,0,0.08)",
-              padding: "3rem 2.5rem",
-              borderRadius: "1.75rem",
-              fontFamily: "'Inter', sans-serif",
-              borderTop: "8px solid #10b981",
-              transition: "all 0.3s ease-in-out",
-            }}
-          >
-            {!editMode && !isDownloading && (
-              <button
-                onClick={handleDownloadPDF}
-                style={{
-                  backgroundColor: "#10b981",
-                  color: "#ffffff",
-                  padding: "0.6rem 1.5rem",
-                  border: "none",
-                  borderRadius: "0.5rem",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  marginBottom: "2rem",
-                  boxShadow: "0 4px 8px rgba(16,185,129,0.3)",
-                  transition: "all 0.3s",
-                }}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#0f9d75")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#10b981")
-                }
-              >
-                Download PDF
-              </button>
-            )}
+    <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg">
+      <header className="text-center mb-6 border-b pb-4">
+        <h1 className="text-3xl font-bold text-gray-900">Naga Jyothi Padarthi</h1>
+        <h2 className="text-lg text-blue-600">Full Stack Developer</h2>
+        <p className="text-sm text-gray-600 mt-2">
+          📞 123-456-7890 | 📧 padarthinagajyothi05@gmail.com | 🌐 linkedin.com/in/nagajyothi | 📍 Pune
+        </p>
+      </header>
 
-            {/* Achievements */}
-            <div style={{ marginTop: "2rem" }}>
-              <h3
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1.3rem",
-                  color: "#10b981",
-                  borderBottom: "2px solid #10b981",
-                  paddingBottom: "0.3rem",
-                  marginBottom: "1rem",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                Achievements
-              </h3>
-              <ul style={{ paddingLeft: "1.25rem", lineHeight: "1.7" }}>
-                {(resumeData.achievements || []).map((ach, idx) => (
-                  <li
-                    key={idx}
-                    style={{
-                      marginBottom: "0.7rem",
-                      position: "relative",
-                      paddingLeft: "1.2rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "0.25rem",
-                        width: "0.5rem",
-                        height: "0.5rem",
-                        backgroundColor: "#10b981",
-                        borderRadius: "50%",
-                      }}
-                    ></span>
-                    {ach.keyAchievements || ach}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <section className="mb-6">
+        <h3 className="font-bold text-gray-800 border-b pb-1 mb-2">SUMMARY</h3>
+        <p className="text-gray-700">
+          Passionate full-stack developer with 3+ years of experience building scalable web applications.
+        </p>
+      </section>
 
-            {/* Projects */}
-            <div style={{ marginTop: "2.5rem" }}>
-              <h3
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1.3rem",
-                  color: "#10b981",
-                  borderBottom: "2px solid #10b981",
-                  paddingBottom: "0.3rem",
-                  marginBottom: "1rem",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                Projects
-              </h3>
-              <ul style={{ paddingLeft: "1.25rem", lineHeight: "1.7" }}>
-                {(resumeData.projects || []).map((proj, idx) => (
-                  <li
-                    key={idx}
-                    style={{
-                      marginBottom: "0.7rem",
-                      position: "relative",
-                      paddingLeft: "1.2rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "0.25rem",
-                        width: "0.5rem",
-                        height: "0.5rem",
-                        backgroundColor: "#10b981",
-                        borderRadius: "50%",
-                      }}
-                    ></span>
-                    <strong>{proj.title || proj.name}</strong>: {proj.description}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <section className="mb-6">
+        <h3 className="font-bold text-gray-800 border-b pb-1 mb-2">EXPERIENCE</h3>
+        <div>
+          <h4 className="font-semibold text-gray-900">Software Developer</h4>
+          <p className="text-blue-600">ABC Pvt Ltd</p>
+          <p className="text-gray-600 text-sm">2020 - Present | Mumbai</p>
+          <p className="text-gray-700 mt-2">
+            Built scalable MERN applications used by 10k+ users and improved API performance by 40%.
+          </p>
+        </div>
+      </section>
 
-            {/* Certifications */}
-            <div style={{ marginTop: "2.5rem" }}>
-              <h3
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1.3rem",
-                  color: "#10b981",
-                  borderBottom: "2px solid #10b981",
-                  paddingBottom: "0.3rem",
-                  marginBottom: "1rem",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                Certifications
-              </h3>
-              <ul style={{ paddingLeft: "1.25rem", lineHeight: "1.7" }}>
-                {(resumeData.certifications || []).map((cert, idx) => (
-                  <li
-                    key={idx}
-                    style={{
-                      marginBottom: "0.7rem",
-                      position: "relative",
-                      paddingLeft: "1.2rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "0.25rem",
-                        width: "0.5rem",
-                        height: "0.5rem",
-                        backgroundColor: "#10b981",
-                        borderRadius: "50%",
-                      }}
-                    ></span>
-                    {cert.title || cert}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <section className="mb-6">
+        <h3 className="font-bold text-gray-800 border-b pb-1 mb-2">EDUCATION</h3>
+        <div>
+          <h4 className="font-semibold text-gray-900">B.Tech in Computer Science</h4>
+          <p className="text-blue-600">XYZ University</p>
+          <p className="text-gray-600 text-sm">2016 - 2020 | Pune</p>
+        </div>
+      </section>
 
-            {/* Languages */}
-            <div style={{ marginTop: "2.5rem" }}>
-              <h3
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1.3rem",
-                  color: "#10b981",
-                  borderBottom: "2px solid #10b981",
-                  paddingBottom: "0.3rem",
-                  marginBottom: "1rem",
-                  letterSpacing: "0.5px",
-                }}
+      <div className="grid grid-cols-2 gap-4 mt-8">
+        <div>
+          <h3 className="font-bold text-gray-800 border-b pb-1 mb-2">ACHIEVEMENTS</h3>
+          <ul className="text-gray-700 list-disc pl-5">
+            <li>🏆 Winner - Hackathon 2022</li>
+            <li>Top 5% in Google Code Jam 2023</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-800 border-b pb-1 mb-2">SKILLS</h3>
+          <div className="flex flex-wrap gap-2">
+            {["React", "Node.js", "MongoDB", "Express", "Tailwind CSS"].map((skill) => (
+              <span
+                key={skill}
+                className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm shadow-sm"
               >
-                Languages
-              </h3>
-              <ul style={{ paddingLeft: "1.25rem", lineHeight: "1.7" }}>
-                {(resumeData.languages || []).map((lang, idx) => (
-                  <li
-                    key={idx}
-                    style={{
-                      marginBottom: "0.7rem",
-                      position: "relative",
-                      paddingLeft: "1.2rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "0.25rem",
-                        width: "0.5rem",
-                        height: "0.5rem",
-                        backgroundColor: "#10b981",
-                        borderRadius: "50%",
-                      }}
-                    ></span>
-                    {lang.language || lang}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                {skill}
+              </span>
+            ))}
           </div>
         </div>
       </div>
+
+      <footer className="text-right text-xs text-gray-400 mt-6">
+        Made by NagaJyothi Padarthi
+      </footer>
     </div>
   );
 };

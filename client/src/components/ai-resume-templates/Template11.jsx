@@ -16,7 +16,7 @@ const Template11 = () => {
   const [showCertificationForm, setShowCertificationForm] = useState(false);
   const [showSkillForm, setShowSkillForm] = useState(false);
   const [showLanguageForm, setShowLanguageForm] = useState(false);
-  const [showInterestForm, setShowInterestForm] = useState(false);  const [showAchievementForm, setShowAchievementForm] = useState(false);
+  const [showInterestForm, setShowInterestForm] = useState(false); const [showAchievementForm, setShowAchievementForm] = useState(false);
 
   // Editing states
   const [editingExperience, setEditingExperience] = useState(null);
@@ -206,6 +206,29 @@ const Template11 = () => {
   };
 
   // Certification handlers
+  const addOrUpdateCertification = (e) => {
+    e.preventDefault();
+    if (!newCertification.title || !newCertification.issuer || !newCertification.date) return;
+
+    if (editingCertification !== null) {
+      const updated = [...localData.certifications];
+      updated[editingCertification] = newCertification;
+      setLocalData({ ...localData, certifications: updated });
+      setEditingCertification(null);
+    } else {
+      setLocalData({
+        ...localData,
+        certifications: [...localData.certifications, newCertification]
+      });
+    }
+
+    setShowCertificationForm(false);
+    setNewCertification({ title: "", issuer: "", date: "" });
+  };
+  const removeCertification = (index) => {
+    const updated = localData.certifications.filter((_, i) => i !== index);
+    setLocalData({ ...localData, certifications: updated });
+  };
   const editCertification = (index) => {
     const cert = localData.certifications[index];
     setEditingCertification(index);
@@ -216,27 +239,49 @@ const Template11 = () => {
   // Achievement handlers
   const addOrUpdateAchievement = (e) => {
     e.preventDefault();
-    if (!newAchievement.trim()) return;
+    if (!newAchievement) return;
 
-    if (editingAchievement !== null) {
-      const updated = [...localData.achievements];
-      updated[editingAchievement] = newAchievement.trim();
-      setLocalData({ ...localData, achievements: updated });
-      setEditingAchievement(null);
+    const isObj = typeof newAchievement === "object" && newAchievement !== null;
+
+    // Normalize entry
+    let entry;
+    if (isObj) {
+      const title = (newAchievement.title || "").trim();
+      const description = (newAchievement.description || "").trim();
+      const year = (newAchievement.year || "").trim();
+      if (!title && !description && !year) return;
+      entry = { title, description, year };
     } else {
-      setLocalData({
-        ...localData,
-        achievements: [...localData.achievements, newAchievement.trim()]
-      });
+      const text = String(newAchievement).trim();
+      if (!text) return;
+      entry = text;
     }
 
+    // Update localData
+    if (editingAchievement !== null) {
+      const updated = [...(localData.achievements || [])];
+      updated[editingAchievement] = entry;
+      const updatedData = { ...localData, achievements: updated };
+      setLocalData(updatedData);
+      localStorage.setItem("resumeData", JSON.stringify(updatedData));
+      setEditingAchievement(null);
+    } else {
+      const updated = [...(localData.achievements || []), entry];
+      const updatedData = { ...localData, achievements: updated };
+      setLocalData(updatedData);
+      localStorage.setItem("resumeData", JSON.stringify(updatedData));
+    }
+
+    // Reset form state
     setShowAchievementForm(false);
-    setNewAchievement("");
+    setNewAchievement(isObj ? { title: "", description: "", year: "" } : "");
   };
 
   const editAchievement = (index) => {
+    const ach = localData.achievements[index];
     setEditingAchievement(index);
-    setNewAchievement(localData.achievements[index]);
+    // keep object entries as objects, strings as strings
+    setNewAchievement(typeof ach === "object" && ach !== null ? { ...ach } : ach);
     setShowAchievementForm(true);
   };
 
@@ -398,20 +443,20 @@ const Template11 = () => {
                       type="text"
                       value={localData[field] || ""}
                       onChange={(e) => handleFieldChange(field, e.target.value)}
-                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                      style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        padding: "4px 8px"
-                      }}
+                      placeholder={field.charAt(0).toUpperCase()+field.slice(1)}
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  padding: "4px 8px"
+                }}
                     />
-                  ) : (
-                    localData[field] && (
-                      <p key={field} style={{ margin: "0", padding: "4px" }}>
-                        <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong> {localData[field]}
-                      </p>
-                    )
-                  )
+                ) : (
+                localData[field] && (
+                <p key={field} style={{ margin: "0", padding: "4px" }}>
+                  <strong>{field.charAt(0).toUpperCase() +field.slice(1)}:</strong> {localData[field]}
+                </p>
+                )
+                )
                 )}
               </div>
             </div>
@@ -516,40 +561,20 @@ const Template11 = () => {
               </div>
             </div>
 
-            {/* Language */}
-            <div style={{ marginBottom: "2rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                <h3 style={{ fontWeight: "bold", fontSize: "1.25rem", marginBottom: "0", borderBottom: "2px solid #3b82f6", paddingBottom: "0.25rem" }}>
-                  Language
-                </h3>
-                {editMode && (
-                  <button
-                    onClick={() => setShowLanguageForm(true)}
-                    style={{
-                      backgroundColor: "#10b981",
-                      color: "white",
-                      border: "none",
-                      padding: "0.25rem 0.75rem",
-                      borderRadius: "0.375rem",
-                      fontSize: "0.875rem",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Add Language
-                  </button>
-                )}
-              </div>
-
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
                 {localData.languages.map((language, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     {editMode ? (
                       <input
                         type="text"
-                        value={language}
+                        value={typeof language === "object" && language !== null ? (language.language || "") : (language || "")}
                         onChange={(e) => {
                           const updated = [...localData.languages];
-                          updated[i] = e.target.value;
+                          if (typeof updated[i] === "object" && updated[i] !== null) {
+                            updated[i] = { ...updated[i], language: e.target.value };
+                          } else {
+                            updated[i] = e.target.value;
+                          }
                           const updatedData = { ...localData, languages: updated };
                           setLocalData(updatedData);
                           localStorage.setItem('resumeData', JSON.stringify(updatedData));
@@ -571,12 +596,19 @@ const Template11 = () => {
                         borderRadius: "1rem",
                         fontSize: "0.875rem"
                       }}>
-                        {language}
+                        {typeof language === "object" && language !== null
+                          ? `${language.language || ""}${language.proficiency ? ` — ${language.proficiency}` : ""}`
+                          : language}
                       </div>
                     )}
                     {editMode && (
                       <button
-                        onClick={() => removeLanguage(i)}
+                        onClick={() => {
+                          const updated = localData.languages.filter((_, idx) => idx !== i);
+                          const updatedData = { ...localData, languages: updated };
+                          setLocalData(updatedData);
+                          localStorage.setItem('resumeData', JSON.stringify(updatedData));
+                        }}
                         style={{
                           backgroundColor: "transparent",
                           border: "none",
@@ -592,8 +624,6 @@ const Template11 = () => {
                   </div>
                 ))}
               </div>
-            </div>
-
             {/* Interest */}
             <div style={{ marginBottom: "2rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -1245,7 +1275,11 @@ const Template11 = () => {
                 </h3>
                 {editMode && (
                   <button
-                    onClick={() => setShowAchievementForm(true)}
+                    onClick={() => {
+                      setEditingAchievement(null);
+                      setNewAchievement({ title: "", description: "", year: "" }); // open form for structured achievement
+                      setShowAchievementForm(true);
+                    }}
                     style={{
                       backgroundColor: "#10b981",
                       color: "white",
@@ -1258,29 +1292,55 @@ const Template11 = () => {
                     Add Achievement
                   </button>
                 )}
-                {/* Certifications */}
-
               </div>
+
               {editMode ? (
                 <div>
                   {localData.achievements.map((achievement, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-                      <input
-                        type="text"
-                        value={achievement}
-                        onChange={(e) => {
-                          const updated = [...localData.achievements];
-                          updated[i] = e.target.value;
-                          handleFieldChange("achievements", updated);
-                        }}
-                        placeholder="e.g won 1st place in xyz hackathon(2024)"
-                        style={{
-                          flex: 1,
-                          border: "1px solid #ccc",
-                          borderRadius: "4px",
-                          padding: "8px"
-                        }}
-                      />
+                      {typeof achievement === "object" && achievement !== null ? (
+                        <div style={{ flex: 1, display: "grid", gap: "0.25rem" }}>
+                          <input
+                            type="text"
+                            value={achievement.title || ""}
+                            onChange={(e) => handleArrayFieldChange("achievements", i, "title", e.target.value)}
+                            placeholder="Title (e.g., 1st place — XYZ Hackathon)"
+                            style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "8px" }}
+                          />
+                          <input
+                            type="text"
+                            value={achievement.description || ""}
+                            onChange={(e) => handleArrayFieldChange("achievements", i, "description", e.target.value)}
+                            placeholder="Short description (optional)"
+                            style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "8px" }}
+                          />
+                          <input
+                            type="text"
+                            value={achievement.year || ""}
+                            onChange={(e) => handleArrayFieldChange("achievements", i, "year", e.target.value)}
+                            placeholder="Year (optional)"
+                            style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "8px" }}
+                          />
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          value={achievement}
+                          onChange={(e) => {
+                            const updated = [...localData.achievements];
+                            updated[i] = e.target.value;
+                            handleFieldChange("achievements", updated);
+                          }}
+                          placeholder="e.g., Won 1st place — XYZ Hackathon (2024)"
+                          style={{
+                            flex: 1,
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            padding: "8px"
+                          }}
+                        />
+                      )}
+
                       <button
                         onClick={() => removeArrayItem("achievements", i)}
                         style={{
@@ -1302,7 +1362,17 @@ const Template11 = () => {
               ) : (
                 <ul style={{ marginLeft: "1.5rem" }}>
                   {localData.achievements.map((achievement, i) => (
-                    <li key={i} style={{ marginBottom: "0.25rem" }}>{achievement}</li>
+                    <li key={i} style={{ marginBottom: "0.25rem" }}>
+                      {typeof achievement === "object" && achievement !== null ? (
+                        <>
+                          <strong>{achievement.title}</strong>
+                          {achievement.description ? ` — ${achievement.description}` : ""}
+                          {achievement.year ? ` (${achievement.year})` : ""}
+                        </>
+                      ) : (
+                        achievement
+                      )}
+                    </li>
                   ))}
                 </ul>
               )}
@@ -2268,3 +2338,6 @@ const Template11 = () => {
 };
 
 export default Template11;
+
+
+

@@ -8,12 +8,75 @@ const Template5 = () => {
   const { resumeData, setResumeData } = useResume();
   const [editMode, setEditMode] = useState(false);
   const [localData, setLocalData] = useState(resumeData);
+  const emptyTemplate = {
+    name: "",
+    role: "",
+    phone: "",
+    email: "",
+    linkedin: "",
+    location: "",
+    summary: "",
+    experience: [
+      {
+        companyName: "",
+        title: "",
+        date: "",
+        companyLocation: "",
+        description: "",
+        accomplishment: [""],
+      },
+    ],
+    education: [
+      {
+        institution: "",
+        degree: "",
+        duration: "",
+        grade: "",
+      },
+    ],
+    achievements: [""],
+    skills: [""],
+    courses: [
+      {
+        title: "",
+        description: "",
+      },
+    ],
+    projects: [
+      {
+        name: "",
+        description: "",
+        technologies: [],
+        duration: "",
+        link: "",
+        github: "",
+      },
+    ],
+  };
+  const [activeSection, setActiveSection] = useState(null);
+  const [hoveredSection, setHoveredSection] = useState(null);
+  const [sectionsOrder, setSectionsOrder] = useState([
+    "summary",
+    "experience",
+    "education",
+    "achievements",
+    "skills",
+    "courses",
+    "projects",
+  ]);
+
+  useEffect(() => {
+    setLocalData(resumeData);
+  }, [resumeData]);
+  const [errors, setErrors] = useState({});
+  const nameRef = useRef(null);
+  const summaryRef = useRef(null);
 
   // UI State (keeping original functionality)
-  const [showPreview, setShowPreview] = useState(false);
-  const [showEnhancementOptions, setShowEnhancementOptions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showButtons, setShowButtons] = useState(true);
+  const [showEnhancementOptions, setShowEnhancementOptions] = useState(false);
+  // Tie button visibility to edit mode so controls only show while editing
+  const showButtons = editMode;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sectionSettings, setSectionSettings] = useState({
     header: {
@@ -32,33 +95,88 @@ const Template5 = () => {
     courses: { showCourses: true },
     projects: { showProjects: true },
   });
-  const [activeSection, setActiveSection] = useState(null);
-  const [hoveredSection, setHoveredSection] = useState(null);
-  const [sectionsOrder, setSectionsOrder] = useState([
-    "summary",
-    "experience",
-    "education",
-    "achievements",
-    "skills",
-    "courses",
-    "projects",
-  ]);
 
-  useEffect(() => {
-    setLocalData(resumeData);
-  }, [resumeData]);
+  // Local display defaults used only for Template5 visual output when resumeData
+  // doesn't contain a meaningful value. This keeps the context untouched while
+  // ensuring Template5 looks friendly for users with empty saved data.
+  const displayDefaults = {
+    name: "Your Name",
+    role: "Your Title (e.g. Software Engineer)",
+    phone: "123-456-7890",
+    email: "email@example.com",
+    linkedin: "https://linkedin.com/in/your-profile",
+    location: "City, Country",
+    summary: "Write a short professional summary that highlights your experience and goals.",
+    experience: [
+      {
+        companyName: "Company Name",
+        title: "Job Title",
+        date: "MM/YYYY - MM/YYYY",
+        companyLocation: "City, Country",
+        description: "Describe your responsibilities and achievements.",
+        accomplishment: ["Highlight a key accomplishment."]
+      }
+    ],
+    education: [
+      {
+        institution: "Institution Name",
+        degree: "Degree (e.g. BSc Computer Science)",
+        duration: "YYYY - YYYY",
+        grade: "GPA or Grade"
+      }
+    ],
+    achievements: ["List a notable achievement (e.g. Top 5% in coding competition)"],
+    skills: ["Skill 1", "Skill 2"],
+    courses: [
+      {
+        title: "Course Title",
+        description: "Short course description"
+      }
+    ],
+    projects: [
+      {
+        name: "Project Title",
+        description: "Brief description of the project and your role",
+        technologies: ["Tech1", "Tech2"],
+        duration: "MM/YYYY - MM/YYYY",
+        link: "",
+        github: ""
+      }
+    ]
+  };
+
+  const viewData = editMode ? localData : { ...displayDefaults, ...resumeData };
 
   const handleEnhance = (section) => {
     // This will be handled by the Sidebar component
   };
 
   const handleSave = () => {
+    const newErrors = {};
+    if (!localData.name || !localData.name.toString().trim()) {
+      newErrors.name = "Name cannot be empty";
+    }
+    if (!localData.summary || !localData.summary.toString().trim()) {
+      newErrors.summary = "Summary cannot be empty";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // focus first invalid field
+      if (newErrors.name) {
+        nameRef.current?.focus();
+      } else if (newErrors.summary) {
+        summaryRef.current?.focus();
+      }
+      return;
+    }
     setResumeData(localData);
+    setErrors({});
     setEditMode(false);
   };
 
   const handleCancel = () => {
     setLocalData(resumeData);
+    setErrors({});
     setEditMode(false);
   };
 
@@ -92,8 +210,6 @@ const Template5 = () => {
       updatedData = { ...localData, [field]: value };
     }
     setLocalData(updatedData);
-    // Auto-save to localStorage for universal save system
-    localStorage.setItem('resumeData', JSON.stringify(updatedData));
   };
 
   const handleAddSection = (section, itemToDuplicate) => {
@@ -254,44 +370,73 @@ const Template5 = () => {
                 padding: "1rem",
               }}
             >
-              <h1
-                contentEditable={editMode}
-                suppressContentEditableWarning
-                onBlur={(e) =>
-                  handleInputChange(null, "name", e.target.innerText)
-                }
-                style={{
-                  fontWeight: "bold",
-                  wordBreak: "break-words",
-                  textTransform: sectionSettings.header.uppercaseName
-                    ? "uppercase"
-                    : "none",
-                  fontSize: "2rem",
-                }}
-                className={`font-bold break-words ${
-                  sectionSettings.header.uppercaseName ? "uppercase" : ""
-                } text-2xl sm:text-3xl md:text-4xl`}
-                onClick={() => handleSectionClick("header")}
-                onMouseEnter={() => handleSectionHover("header")}
-                onMouseLeave={handleSectionLeave}
-              >
-                {editMode ? localData.name : resumeData.name}
-              </h1>
-              {sectionSettings.header.showTitle && (
-                <p
-                  contentEditable={editMode}
-                  onBlur={(e) =>
-                    handleInputChange(null, "role", e.target.textContent)
-                  }
+              {editMode ? (
+                <input
+                  type="text"
+                  value={localData.name || ""}
+                  onChange={(e) => handleInputChange(null, "name", e.target.value)}
+                  placeholder="Enter your name"
+                  ref={nameRef}
                   style={{
-                    fontSize: "1.125rem",
-                    color: "#6b7280",
-                    marginTop: "0.5rem",
+                    fontWeight: "bold",
+                    wordBreak: "break-words",
+                    textTransform: sectionSettings.header.uppercaseName ? "uppercase" : "none",
+                    fontSize: "2rem",
+                    width: "100%",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "4px",
+                    padding: "6px",
+                    outline: "none",
                   }}
-                  className="text-sm sm:text-base md:text-lg text-gray-600 mt-2"
+                  className={`font-bold break-words ${sectionSettings.header.uppercaseName ? "uppercase" : ""} text-2xl sm:text-3xl md:text-4xl`}
+                />
+              ) : (
+                <h1
+                  style={{
+                    fontWeight: "bold",
+                    wordBreak: "break-words",
+                    textTransform: sectionSettings.header.uppercaseName ? "uppercase" : "none",
+                    fontSize: "2rem",
+                  }}
+                  className={`font-bold break-words ${sectionSettings.header.uppercaseName ? "uppercase" : ""} text-2xl sm:text-3xl md:text-4xl`}
+                  onClick={() => handleSectionClick("header")}
+                  onMouseEnter={() => handleSectionHover("header")}
+                  onMouseLeave={handleSectionLeave}
                 >
-                  {editMode ? localData.role : resumeData.role}
-                </p>
+                  {viewData.name}
+                </h1>
+              )}
+              {sectionSettings.header.showTitle && (
+                editMode ? (
+                  <input
+                    type="text"
+                    value={localData.role || ""}
+                    onChange={(e) => handleInputChange(null, "role", e.target.value)}
+                    placeholder="Enter your current title (e.g. Software Engineer)"
+                    style={{
+                      fontSize: "1.125rem",
+                      color: "#6b7280",
+                      marginTop: "0.5rem",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "4px",
+                      padding: "6px",
+                      width: "100%",
+                      outline: "none",
+                    }}
+                    className="text-sm sm:text-base md:text-lg text-gray-600 mt-2"
+                  />
+                ) : (
+                  <p
+                    style={{
+                      fontSize: "1.125rem",
+                      color: "#6b7280",
+                      marginTop: "0.5rem",
+                    }}
+                    className="text-sm sm:text-base md:text-lg text-gray-600 mt-2"
+                  >
+                    {viewData.role}
+                  </p>
+                )
               )}
               <div
                 style={{
@@ -306,43 +451,63 @@ const Template5 = () => {
                 className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm md:text-base text-gray-700"
               >
                 {sectionSettings.header.showPhone && (
-                  <span
-                    contentEditable={editMode}
-                    onBlur={(e) =>
-                      handleInputChange(null, "phone", e.target.textContent)
-                    }
-                  >
-                    {editMode ? localData.phone : resumeData.phone}
+                  <span>
+                    {editMode ? (
+                      <input
+                        type="tel"
+                        value={localData.phone || ""}
+                        onChange={(e) => handleInputChange(null, "phone", e.target.value)}
+                        style={{ border: "1px solid #e5e7eb", borderRadius: "4px", padding: "4px" }}
+                        placeholder="Enter phone number"
+                      />
+               ) : (
+               viewData.phone
+                    )}
                   </span>
                 )}
                 {sectionSettings.header.showEmail && (
-                  <span
-                    contentEditable={editMode}
-                    onBlur={(e) =>
-                      handleInputChange(null, "email", e.target.textContent)
-                    }
-                  >
-                    {editMode ? localData.email : resumeData.email}
+                  <span>
+                    {editMode ? (
+                      <input
+                        type="email"
+                        value={localData.email || ""}
+                        onChange={(e) => handleInputChange(null, "email", e.target.value)}
+                        style={{ border: "1px solid #e5e7eb", borderRadius: "4px", padding: "4px" }}
+                        placeholder="email@example.com"
+                      />
+                    ) : (
+                      viewData.email
+                    )}
                   </span>
                 )}
                 {sectionSettings.header.showLink && (
-                  <span
-                    contentEditable={editMode}
-                    onBlur={(e) =>
-                      handleInputChange(null, "linkedin", e.target.textContent)
-                    }
-                  >
-                    {editMode ? localData.linkedin : resumeData.linkedin}
+                  <span>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        value={localData.linkedin || ""}
+                        onChange={(e) => handleInputChange(null, "linkedin", e.target.value)}
+                        style={{ border: "1px solid #e5e7eb", borderRadius: "4px", padding: "4px" }}
+                        placeholder="LinkedIn URL"
+                      />
+                    ) : (
+                      viewData.linkedin
+                    )}
                   </span>
                 )}
                 {sectionSettings.header.showLocation && (
-                  <span
-                    contentEditable={editMode}
-                    onBlur={(e) =>
-                      handleInputChange(null, "location", e.target.textContent)
-                    }
-                  >
-                    {editMode ? localData.location : resumeData.location}
+                  <span>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        value={localData.location || ""}
+                        onChange={(e) => handleInputChange(null, "location", e.target.value)}
+                        style={{ border: "1px solid #e5e7eb", borderRadius: "4px", padding: "4px" }}
+                        placeholder="Location"
+                      />
+                    ) : (
+                      viewData.location
+                    )}
                   </span>
                 )}
               </div>
@@ -372,23 +537,38 @@ const Template5 = () => {
                       >
                         Summary
                       </h2>
-                      <p
-                        contentEditable={editMode}
-                        onBlur={(e) =>
-                          handleInputChange(
-                            null,
-                            "summary",
-                            e.target.textContent
-                          )
-                        }
-                        style={{
-                          fontSize: "1rem",
-                          color: "#374151",
-                        }}
-                        className="text-xs sm:text-sm md:text-base text-gray-700"
-                      >
-                        {editMode ? localData.summary : resumeData.summary}
-                      </p>
+                      {editMode ? (
+                        <textarea
+                          value={localData.summary || ""}
+                          onChange={(e) => handleInputChange(null, "summary", e.target.value)}
+                          placeholder="Enter a short professional summary..."
+                          ref={summaryRef}
+                          style={{
+                            width: "100%",
+                            minHeight: "4rem",
+                            fontSize: "0.875rem",
+                            lineHeight: "1.5",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: "4px",
+                            padding: "8px",
+                            resize: "vertical",
+                            outline: "none",
+                          }}
+                        />
+                      ) : (
+                        <p
+                          style={{
+                            fontSize: "1rem",
+                            color: viewData.summary ? "#374151" : "#9CA3AF",
+                          }}
+                          className="text-xs sm:text-sm md:text-base text-gray-700"
+                        >
+                          {viewData.summary ? viewData.summary : "No summary provided. Click Edit to add one."}
+                        </p>
+                      )}
+                      {errors.summary && (
+                        <div style={{ color: "#ef4444", marginTop: "6px", fontSize: "0.875rem" }}>{errors.summary}</div>
+                      )}
                       {showButtons && (
                         <button
                           onClick={() => handleRemoveSection("summary")}
@@ -428,180 +608,203 @@ const Template5 = () => {
                       >
                         Experience
                       </h2>
-                      {(
-                        (editMode ? localData : resumeData).experience || []
-                      ).map((exp, idx) => (
-                        <div key={idx} style={{ marginBottom: "1rem" }}>
-                          <h3
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "experience",
-                                "companyName",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "1.125rem",
-                              fontWeight: "600",
-                            }}
-                            className="text-base sm:text-lg font-semibold"
-                          >
-                            {exp.companyName}
-                          </h3>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "experience",
-                                "title",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {exp.title}
-                          </p>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "experience",
-                                "date",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {exp.date}
-                          </p>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "experience",
-                                "companyLocation",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {exp.companyLocation}
-                          </p>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "experience",
-                                "description",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#374151",
-                            }}
-                            className="text-xs sm:text-sm text-gray-700"
-                          >
-                            {exp.description}
-                          </p>
-                          {Array.isArray(exp.accomplishment) ? (
-                            <ul>
-                              {exp.accomplishment.map((acc, accIdx) => (
-                                <li
-                                  key={accIdx}
-                                  contentEditable={editMode}
-                                  onBlur={(e) => {
-                                    const updatedExp = [
-                                      ...(editMode ? localData : resumeData)
-                                        .experience,
-                                    ];
-                                    updatedExp[idx].accomplishment[accIdx] =
-                                      e.target.textContent;
-                                    handleInputChange(
-                                      "experience",
-                                      "accomplishment",
-                                      updatedExp[idx].accomplishment,
-                                      idx
-                                    );
-                                  }}
-                                  style={{
-                                    fontSize: "0.875rem",
-                                    color: "#374151",
-                                  }}
-                                  className="text-xs sm:text-sm text-gray-700"
-                                >
-                                  {acc}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p
-                              contentEditable={editMode}
-                              onBlur={(e) =>
-                                handleInputChange(
-                                  "experience",
-                                  "accomplishment",
-                                  e.target.textContent,
-                                  idx
-                                )
-                              }
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#374151",
-                              }}
-                              className="text-xs sm:text-sm text-gray-700"
-                            >
-                              {exp.accomplishment}
-                            </p>
-                          )}
-                          {showButtons && (
-                            <button
-                              onClick={() =>
-                                handleRemoveSection("experience", idx)
-                              }
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#ef4444",
-                                border: "none",
-                                background: "none",
-                                cursor: "pointer",
-                              }}
-                              className="text-xs sm:text-sm text-red-500 hover:text-red-700 transition-colors duration-300"
-                            >
-                              Remove Experience
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                      {((editMode ? localData : viewData).experience || []).map(
+                        (exp, idx) => (
+                          <div key={idx} style={{ marginBottom: "1rem" }}>
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.experience?.[idx]?.companyName || ""}
+                                onChange={(e) =>
+                                  handleInputChange("experience", "companyName", e.target.value, idx)
+                                }
+                                placeholder="Company name"
+                                style={{
+                                  fontSize: "1.125rem",
+                                  fontWeight: "600",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                }}
+                                className="text-base sm:text-lg font-semibold"
+                              />
+                            ) : (
+                              <h3
+                                style={{
+                                  fontSize: "1.125rem",
+                                  fontWeight: "600",
+                                }}
+                                className="text-base sm:text-lg font-semibold"
+                              >
+                                {exp.companyName}
+                              </h3>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.experience?.[idx]?.title || ""}
+                                onChange={(e) =>
+                                  handleInputChange("experience", "title", e.target.value, idx)
+                                }
+                                placeholder="Job title (e.g. Frontend Developer)"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {exp.title}
+                              </p>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.experience?.[idx]?.date || ""}
+                                onChange={(e) =>
+                                  handleInputChange("experience", "date", e.target.value, idx)
+                                }
+                                placeholder="MM/YYYY - MM/YYYY"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {exp.date}
+                              </p>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.experience?.[idx]?.companyLocation || ""}
+                                onChange={(e) =>
+                                  handleInputChange("experience", "companyLocation", e.target.value, idx)
+                                }
+                                placeholder="City, Country"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {exp.companyLocation}
+                              </p>
+                            )}
+
+                            {editMode ? (
+                              <textarea
+                                value={localData.experience?.[idx]?.description || ""}
+                                onChange={(e) =>
+                                  handleInputChange("experience", "description", e.target.value, idx)
+                                }
+                                placeholder="Describe your responsibilities and achievements"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#374151",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                  resize: "vertical",
+                                }}
+                                className="text-xs sm:text-sm text-gray-700"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#374151",
+                                }}
+                                className="text-xs sm:text-sm text-gray-700"
+                              >
+                                {exp.description}
+                              </p>
+                            )}
+
+                            {/* Accomplishment details removed by user request */}
+
+                            {showButtons && (
+                              <button
+                                onClick={() => handleRemoveSection("experience", idx)}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  backgroundColor: "#ef4444",
+                                  color: "white",
+                                  padding: "0.35rem 0.6rem",
+                                  borderRadius: "0.375rem",
+                                  border: "none",
+                                  cursor: "pointer",
+                                }}
+                                className="text-xs sm:text-sm transition-colors duration-300"
+                              >
+                                Remove Experience
+                              </button>
+                            )}
+                          </div>
+                        )
+                      )}
                       {showButtons && (
                         <button
                           onClick={() => handleAddSection("experience")}
                           style={{
                             fontSize: "0.875rem",
-                            color: "#3b82f6",
+                            backgroundColor: "#3b82f6",
+                            color: "white",
+                            padding: "0.35rem 0.6rem",
+                            borderRadius: "0.375rem",
                             border: "none",
-                            background: "none",
                             cursor: "pointer",
                           }}
-                          className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                          className="text-xs sm:text-sm transition-colors duration-300"
                         >
                           Add Experience
                         </button>
@@ -620,6 +823,7 @@ const Template5 = () => {
                             cursor: "pointer",
                           }}
                           className="absolute top-0 right-0 text-xs text-red-500 hover:text-red-700 transition-colors duration-300"
+                          aria-label="Remove Experience Section"
                         >
                           X
                         </button>
@@ -645,112 +849,169 @@ const Template5 = () => {
                       >
                         Education
                       </h2>
-                      {(
-                        (editMode ? localData : resumeData).education || []
-                      ).map((edu, idx) => (
-                        <div key={idx} style={{ marginBottom: "1rem" }}>
-                          <h3
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "education",
-                                "institution",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "1.125rem",
-                              fontWeight: "600",
-                            }}
-                            className="text-base sm:text-lg font-semibold"
-                          >
-                            {edu.institution}
-                          </h3>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "education",
-                                "degree",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {edu.degree}
-                          </p>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "education",
-                                "duration",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {edu.duration}
-                          </p>
-                          <p
-                            contentEditable={editMode}
-                            onBlur={(e) =>
-                              handleInputChange(
-                                "education",
-                                "grade",
-                                e.target.textContent,
-                                idx
-                              )
-                            }
-                            style={{
-                              fontSize: "0.875rem",
-                              color: "#6b7280",
-                            }}
-                            className="text-xs sm:text-sm text-gray-600"
-                          >
-                            {edu.grade}
-                          </p>
-                          {showButtons && (
-                            <button
-                              onClick={() =>
-                                handleRemoveSection("education", idx)
-                              }
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#ef4444",
-                                border: "none",
-                                background: "none",
-                                cursor: "pointer",
-                              }}
-                              className="text-xs sm:text-sm text-red-500 hover:text-red-700 transition-colors duration-300"
-                            >
-                              Remove Education
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                      {((editMode ? localData : viewData).education || []).map(
+                        (edu, idx) => (
+                          <div key={idx} style={{ marginBottom: "1rem" }}>
+                            {editMode ? (
+                                <input
+                                  type="text"
+                                  value={localData.education?.[idx]?.institution || ""}
+                                  onChange={(e) =>
+                                  handleInputChange("education", "institution", e.target.value, idx)
+                                }
+                                placeholder="Institution name"
+                                style={{
+                                  fontSize: "1.125rem",
+                                  fontWeight: "600",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                }}
+                                className="text-base sm:text-lg font-semibold"
+                              />
+                            ) : (
+                              <h3
+                                style={{
+                                  fontSize: "1.125rem",
+                                  fontWeight: "600",
+                                }}
+                                className="text-base sm:text-lg font-semibold"
+                              >
+                                {edu.institution}
+                              </h3>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.education?.[idx]?.degree || ""}
+                                onChange={(e) =>
+                                  handleInputChange("education", "degree", e.target.value, idx)
+                                }
+                                placeholder="Degree (e.g. BSc Computer Science)"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {edu.degree}
+                              </p>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.education?.[idx]?.duration || ""}
+                                onChange={(e) =>
+                                  handleInputChange("education", "duration", e.target.value, idx)
+                                }
+                                placeholder="YYYY - YYYY"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {edu.duration}
+                              </p>
+                            )}
+
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={localData.education?.[idx]?.grade || ""}
+                                onChange={(e) =>
+                                  handleInputChange("education", "grade", e.target.value, idx)
+                                }
+                                placeholder="GPA or Grade (optional)"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                  marginTop: "6px",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              />
+                            ) : (
+                              <p
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                                className="text-xs sm:text-sm text-gray-600"
+                              >
+                                {edu.grade}
+                              </p>
+                            )}
+
+                            {showButtons && (
+                              <button
+                                onClick={() => handleRemoveSection("education", idx)}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  backgroundColor: "#ef4444",
+                                  color: "white",
+                                  padding: "0.35rem 0.6rem",
+                                  borderRadius: "0.375rem",
+                                  border: "none",
+                                  cursor: "pointer",
+                                }}
+                                className="text-xs sm:text-sm transition-colors duration-300"
+                              >
+                                Remove Education
+                              </button>
+                            )}
+                          </div>
+                        )
+                      )}
                       {showButtons && (
                         <button
                           onClick={() => handleAddSection("education")}
                           style={{
                             fontSize: "0.875rem",
-                            color: "#3b82f6",
+                            backgroundColor: "#3b82f6",
+                            color: "white",
+                            padding: "0.35rem 0.6rem",
+                            borderRadius: "0.375rem",
                             border: "none",
-                            background: "none",
                             cursor: "pointer",
                           }}
-                          className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                          className="text-xs sm:text-sm transition-colors duration-300"
                         >
                           Add Education
                         </button>
@@ -769,6 +1030,7 @@ const Template5 = () => {
                             cursor: "pointer",
                           }}
                           className="absolute top-0 right-0 text-xs text-red-500 hover:text-red-700 transition-colors duration-300"
+                          aria-label="Remove Education Section"
                         >
                           X
                         </button>
@@ -794,103 +1056,159 @@ const Template5 = () => {
                       >
                         Key Achievements
                       </h2>
-                      {(
-                        (editMode ? localData : resumeData).achievements || []
-                      ).map((achievement, idx) => (
-                        <div key={idx} style={{ marginBottom: "1rem" }}>
-                          {typeof achievement === "object" ? (
-                            <>
-                              <h3
-                                contentEditable={editMode}
-                                onBlur={(e) =>
-                                  handleInputChange(
-                                    "achievements",
-                                    "keyAchievements",
-                                    e.target.textContent,
-                                    idx
-                                  )
+                      {((editMode ? localData : viewData).achievements || []).map(
+                        (achievement, idx) => (
+                          <div key={idx} style={{ marginBottom: "1rem" }}>
+                            {typeof achievement === "object" ? (
+                              <>
+                                {editMode ? (
+                                  <input
+                                type="text"
+                                value={localData.achievements?.[idx]?.keyAchievements || ""}
+                                onChange={(e) =>
+                                  handleInputChange("achievements", "keyAchievements", e.target.value, idx)
                                 }
+                                placeholder="Achievement title (e.g. Employee of the Month)"
                                 style={{
                                   fontSize: "1.125rem",
                                   fontWeight: "600",
+                                  width: "100%",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
                                 }}
                                 className="text-base sm:text-lg font-semibold"
-                              >
-                                {achievement.keyAchievements}
-                              </h3>
-                              <p
-                                contentEditable={editMode}
-                                onBlur={(e) =>
-                                  handleInputChange(
-                                    "achievements",
-                                    "describe",
-                                    e.target.textContent,
-                                    idx
-                                  )
-                                }
+                              />
+                                ) : (
+                                  <h3
+                                    style={{
+                                      fontSize: "1.125rem",
+                                      fontWeight: "600",
+                                    }}
+                                    className="text-base sm:text-lg font-semibold"
+                                  >
+                                    {achievement.keyAchievements}
+                                  </h3>
+                                )}
+
+                                {editMode ? (
+                                  <textarea
+                                      value={localData.achievements?.[idx]?.describe || ""}
+                                      onChange={(e) =>
+                                        handleInputChange("achievements", "describe", e.target.value, idx)
+                                      }
+                                      placeholder="Describe the achievement and impact (e.g. reduced costs by 15%)"
+                                      style={{
+                                        fontSize: "0.875rem",
+                                        color: "#374151",
+                                        width: "100%",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: "4px",
+                                        padding: "6px",
+                                        outline: "none",
+                                        marginTop: "6px",
+                                        resize: "vertical",
+                                      }}
+                                      className="text-xs sm:text-sm text-gray-700"
+                                    />
+                                ) : (
+                                  <p
+                                    style={{
+                                      fontSize: "0.875rem",
+                                      color: "#374151",
+                                    }}
+                                    className="text-xs sm:text-sm text-gray-700"
+                                  >
+                                    {achievement.describe}
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              editMode ? (
+                                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                                <input
+                                  type="text"
+                                  value={localData.achievements?.[idx] || ""}
+                                  onChange={(e) => {
+                                    const updated = [...(localData.achievements || [])];
+                                    updated[idx] = e.target.value;
+                                    handleInputChange(null, "achievements", updated);
+                                  }}
+                                  placeholder="Describe an achievement (e.g. Increased sales by 20%)"
+                                  style={{
+                                    fontSize: "0.875rem",
+                                    color: "#374151",
+                                    flexGrow: 1,
+                                    border: "1px solid #e5e7eb",
+                                    borderRadius: "4px",
+                                    padding: "6px",
+                                    outline: "none",
+                                  }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const updated = [...(localData.achievements || [])];
+                                    updated.splice(idx, 1);
+                                    handleInputChange(null, "achievements", updated);
+                                  }}
+                                  style={{
+                                    fontSize: "0.75rem",
+                                    color: "#ef4444",
+                                    border: "none",
+                                    background: "none",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  X
+                                </button>
+                              </div>
+                              ) : (
+                                <p
+                                  style={{
+                                    fontSize: "0.875rem",
+                                    color: "#374151",
+                                  }}
+                                  className="text-xs sm:text-sm text-gray-700"
+                                >
+                                  {achievement}
+                                </p>
+                              )
+                            )}
+
+                            {showButtons && (
+                              <button
+                                onClick={() => handleRemoveSection("achievements", idx)}
                                 style={{
                                   fontSize: "0.875rem",
-                                  color: "#374151",
+                                  backgroundColor: "#ef4444",
+                                  color: "white",
+                                  padding: "0.35rem 0.6rem",
+                                  borderRadius: "0.375rem",
+                                  border: "none",
+                                  cursor: "pointer",
                                 }}
-                                className="text-xs sm:text-sm text-gray-700"
+                                className="text-xs sm:text-sm transition-colors duration-300"
                               >
-                                {achievement.describe}
-                              </p>
-                            </>
-                          ) : (
-                            <p
-                              contentEditable={editMode}
-                              onBlur={(e) => {
-                                const updatedAchievements = [
-                                  ...(editMode ? localData : resumeData)
-                                    .achievements,
-                                ];
-                                updatedAchievements[idx] = e.target.textContent;
-                                handleInputChange(
-                                  null,
-                                  "achievements",
-                                  updatedAchievements
-                                );
-                              }}
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#374151",
-                              }}
-                              className="text-xs sm:text-sm text-gray-700"
-                            >
-                              {achievement}
-                            </p>
-                          )}
-                          {showButtons && (
-                            <button
-                              onClick={() =>
-                                handleRemoveSection("achievements", idx)
-                              }
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#ef4444",
-                                border: "none",
-                                background: "none",
-                                cursor: "pointer",
-                              }}
-                              className="text-xs sm:text-sm text-red-500 hover:text-red-700 transition-colors duration-300"
-                            >
-                              Remove Achievement
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                                Remove Achievement
+                              </button>
+                            )}
+                          </div>
+                        )
+                      )}
                       {showButtons && (
                         <button
                           onClick={() => handleAddSection("achievements")}
                           style={{
                             fontSize: "0.875rem",
-                            color: "#3b82f6",
+                            backgroundColor: "#3b82f6",
+                            color: "white",
+                            padding: "0.35rem 0.6rem",
+                            borderRadius: "0.375rem",
                             border: "none",
-                            background: "none",
                             cursor: "pointer",
                           }}
-                          className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                          className="text-xs sm:text-sm transition-colors duration-300"
                         >
                           Add Achievement
                         </button>
@@ -909,6 +1227,7 @@ const Template5 = () => {
                             cursor: "pointer",
                           }}
                           className="absolute top-0 right-0 text-xs text-red-500 hover:text-red-700 transition-colors duration-300"
+                          aria-label="Remove Achievements Section"
                         >
                           X
                         </button>
@@ -944,76 +1263,87 @@ const Template5 = () => {
                       }}
                       className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2"
                     >
-                      {((editMode ? localData : resumeData).skills || []).map(
-                        (skill, idx) => (
-                          <li
-                            key={`${skill}-${idx}`}
-                            style={{ display: "flex", alignItems: "center" }}
-                            className="flex items-center"
-                          >
-                            <span
-                              contentEditable={editMode}
-                              suppressContentEditableWarning
-                              onBlur={(e) => {
-                                const updatedSkills = [
-                                  ...(editMode ? localData : resumeData).skills,
-                                ];
-                                updatedSkills[idx] = e.target.textContent;
-                                if (editMode) {
-                                  setLocalData({
-                                    ...localData,
-                                    skills: updatedSkills,
-                                  });
-                                } else {
-                                  setResumeData({
-                                    ...resumeData,
-                                    skills: updatedSkills,
-                                  });
-                                }
-                              }}
-                              style={{
-                                fontSize: "0.875rem",
-                                color: "#374151",
-                                flexGrow: 1,
-                              }}
-                              className="text-xs sm:text-sm text-gray-700 flex-1"
-                            >
-                              {skill}
-                            </span>
-                            {showButtons && (
-                              <button
-                                onClick={() =>
-                                  handleRemoveSection("skills", idx)
-                                }
-                                style={{
-                                  fontSize: "0.75rem",
-                                  color: "#ef4444",
-                                  border: "none",
-                                  background: "none",
-                                  cursor: "pointer",
-                                  marginLeft: "0.5rem",
+                      {((editMode ? localData : viewData).skills || []).map((skill, idx) => (
+                        <li key={`${skill}-${idx}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} className="flex items-center justify-between">
+                          {editMode ? (
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", width: "100%" }}>
+                              <input
+                                type="text"
+                                value={localData.skills?.[idx] || ""}
+                                onChange={(e) => {
+                                  const updated = [...(localData.skills || [])];
+                                  updated[idx] = e.target.value;
+                                  handleInputChange(null, "skills", updated);
                                 }}
-                                className="text-xs text-red-500 hover:text-red-700 transition-colors duration-300 ml-2"
+                                placeholder="Skill (e.g. React, Node.js)"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#374151",
+                                  flexGrow: 1,
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: "4px",
+                                  padding: "6px",
+                                  outline: "none",
+                                }}
+                                className="text-xs sm:text-sm text-gray-700 flex-1"
+                              />
+                              <button
+                                onClick={() => {
+                                  handleRemoveSection("skills", idx);
+                                }}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  backgroundColor: "#ef4444",
+                                  color: "white",
+                                  padding: "0.35rem 0.6rem",
+                                  borderRadius: "0.375rem",
+                                  border: "none",
+                                  cursor: "pointer",
+                                }}
+                                className="text-xs sm:text-sm transition-colors duration-300"
                               >
-                                X
+                                Remove Skill
                               </button>
-                            )}
-                          </li>
-                        )
-                      )}
+                            </div>
+                          ) : (
+                            <>
+                              <span style={{ fontSize: "0.875rem", color: "#374151", flexGrow: 1 }} className="text-xs sm:text-sm text-gray-700 flex-1">{skill}</span>
+                              {showButtons && (
+                                <button
+                                  onClick={() => handleRemoveSection("skills", idx)}
+                                  style={{
+                                    fontSize: "0.875rem",
+                                    backgroundColor: "#ef4444",
+                                    color: "white",
+                                    padding: "0.35rem 0.6rem",
+                                    borderRadius: "0.375rem",
+                                    border: "none",
+                                    cursor: "pointer",
+                                  }}
+                                  className="text-xs sm:text-sm transition-colors duration-300"
+                                >
+                                  Remove Skill
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </li>
+                      ))}
                     </ul>
                     {showButtons && (
                       <button
                         onClick={() => handleAddSection("skills")}
                         style={{
                           fontSize: "0.875rem",
-                          color: "#3b82f6",
+                          backgroundColor: "#3b82f6",
+                          color: "white",
+                          padding: "0.35rem 0.6rem",
+                          borderRadius: "0.375rem",
                           border: "none",
-                          background: "none",
                           cursor: "pointer",
                           marginTop: "0.5rem",
                         }}
-                        className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300 mt-2"
+                        className="text-xs sm:text-sm transition-colors duration-300 mt-2"
                       >
                         Add Skill
                       </button>
@@ -1032,6 +1362,7 @@ const Template5 = () => {
                           cursor: "pointer",
                         }}
                         className="absolute top-0 right-0 text-xs text-red-500 hover:text-red-700 transition-colors duration-300"
+                        aria-label="Remove Skills Section"
                       >
                         X
                       </button>
@@ -1057,76 +1388,69 @@ const Template5 = () => {
                       >
                         Courses
                       </h2>
-                      {((editMode ? localData : resumeData).courses || []).map(
-                        (course, idx) => (
-                          <div key={idx} style={{ marginBottom: "1rem" }}>
-                            <h3
-                              contentEditable={editMode}
-                              onBlur={(e) =>
-                                handleInputChange(
-                                  "courses",
-                                  "title",
-                                  e.target.textContent,
-                                  idx
-                                )
-                              }
+                      {((editMode ? localData : viewData).courses || []).map((course, idx) => (
+                        <div key={idx} style={{ marginBottom: "1rem" }}>
+                          {editMode ? (
+                            <input
+                              type="text"
+                              value={localData.courses?.[idx]?.title || ""}
+                              onChange={(e) => handleInputChange("courses", "title", e.target.value, idx)}
+                              placeholder="Course title (e.g. Algorithms & Data Structures)"
                               style={{
                                 fontSize: "1.125rem",
                                 fontWeight: "600",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
                               }}
                               className="text-base sm:text-lg font-semibold"
-                            >
-                              {course.title}
-                            </h3>
-                            <p
-                              contentEditable={editMode}
-                              onBlur={(e) =>
-                                handleInputChange(
-                                  "courses",
-                                  "description",
-                                  e.target.textContent,
-                                  idx
-                                )
-                              }
+                            />
+                          ) : (
+                            <h3 style={{ fontSize: "1.125rem", fontWeight: "600" }} className="text-base sm:text-lg font-semibold">{course.title}</h3>
+                          )}
+
+                          {editMode ? (
+                            <textarea
+                              value={localData.courses?.[idx]?.description || ""}
+                              onChange={(e) => handleInputChange("courses", "description", e.target.value, idx)}
+                              placeholder="Brief description of the course and what you learned"
                               style={{
                                 fontSize: "0.875rem",
                                 color: "#374151",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
+                                marginTop: "6px",
+                                resize: "vertical",
                               }}
                               className="text-xs sm:text-sm text-gray-700"
-                            >
-                              {course.description}
-                            </p>
-                            {showButtons && (
-                              <button
-                                onClick={() =>
-                                  handleRemoveSection("courses", idx)
-                                }
-                                style={{
-                                  fontSize: "0.875rem",
-                                  color: "#ef4444",
-                                  border: "none",
-                                  background: "none",
-                                  cursor: "pointer",
-                                }}
-                                className="text-xs sm:text-sm text-red-500 hover:text-red-700 transition-colors duration-300"
-                              >
-                                Remove Course
-                              </button>
-                            )}
-                          </div>
-                        )
-                      )}
+                            />
+                          ) : (
+                            <p style={{ fontSize: "0.875rem", color: "#374151" }} className="text-xs sm:text-sm text-gray-700">{course.description}</p>
+                          )}
+
+                          {showButtons && (
+                            <button onClick={() => handleRemoveSection("courses", idx)} style={{ fontSize: "0.875rem", backgroundColor: "#ef4444", color: "white", padding: "0.35rem 0.6rem", borderRadius: "0.375rem", border: "none", cursor: "pointer" }} className="text-xs sm:text-sm transition-colors duration-300">Remove Course</button>
+                          )}
+                        </div>
+                      ))}
                       {showButtons && (
                         <button
                           onClick={() => handleAddSection("courses")}
                           style={{
                             fontSize: "0.875rem",
-                            color: "#3b82f6",
+                            backgroundColor: "#3b82f6",
+                            color: "white",
+                            padding: "0.35rem 0.6rem",
+                            borderRadius: "0.375rem",
                             border: "none",
-                            background: "none",
                             cursor: "pointer",
                           }}
-                          className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                          className="text-xs sm:text-sm transition-colors duration-300"
                         >
                           Add Course
                         </button>
@@ -1145,6 +1469,7 @@ const Template5 = () => {
                             cursor: "pointer",
                           }}
                           className="absolute top-0 right-0 text-xs text-red-500 hover:text-red-700 transition-colors duration-300"
+                          aria-label="Remove Courses Section"
                         >
                           X
                         </button>
@@ -1170,136 +1495,166 @@ const Template5 = () => {
                       >
                         Projects
                       </h2>
-                      {((editMode ? localData : resumeData).projects || []).map(
-                        (project, idx) => (
-                          <div key={idx} style={{ marginBottom: "1rem" }}>
-                            <h3
-                              contentEditable={editMode}
-                              onBlur={(e) =>
-                                handleInputChange(
-                                  "projects",
-                                  "name",
-                                  e.target.textContent,
-                                  idx
-                                )
-                              }
+                      {((editMode ? localData : viewData).projects || []).map((project, idx) => (
+                        <div key={idx} style={{ marginBottom: "1rem" }}>
+                            {editMode ? (
+                            <input
+                              type="text"
+                              value={localData.projects?.[idx]?.name || localData.projects?.[idx]?.title || ""}
+                              onChange={(e) => handleInputChange("projects", "name", e.target.value, idx)}
+                              placeholder="Project title (e.g. Personal Portfolio)"
                               style={{
                                 fontSize: "1.125rem",
                                 fontWeight: "600",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
                               }}
                               className="text-base sm:text-lg font-semibold"
-                            >
-                              {project.name || project.title}
-                            </h3>
-                            <p
-                              contentEditable={editMode}
-                              onBlur={(e) =>
-                                handleInputChange(
-                                  "projects",
-                                  "description",
-                                  e.target.textContent,
-                                  idx
-                                )
-                              }
+                            />
+                          ) : (
+                            <h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: project.name || project.title ? "#111827" : "rgba(0,0,0,0.35)" }} className="text-base sm:text-lg font-semibold">{project.name || project.title}</h3>
+                          )}
+
+                          {editMode ? (
+                            <textarea
+                              value={localData.projects?.[idx]?.description || ""}
+                              onChange={(e) => handleInputChange("projects", "description", e.target.value, idx)}
+                              placeholder="Brief description of the project and your role"
                               style={{
                                 fontSize: "0.875rem",
                                 color: "#374151",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
+                                marginTop: "6px",
+                                resize: "vertical",
                               }}
                               className="text-xs sm:text-sm text-gray-700"
-                            >
-                              {project.description}
-                            </p>
-                            {project.technologies && (
-                              <p
-                                style={{
-                                  fontSize: "0.875rem",
-                                  color: "#6b7280",
-                                }}
-                              >
-                                <strong>Technologies:</strong>{" "}
-                                {Array.isArray(project.technologies)
-                                  ? project.technologies.join(", ")
-                                  : project.technologies}
+                            />
+                          ) : (
+                            <p style={{ fontSize: "0.875rem", color: "#374151" }} className="text-xs sm:text-sm text-gray-700">{project.description}</p>
+                          )}
+
+                          {editMode ? (
+                            <input
+                              type="text"
+                              value={Array.isArray(localData.projects?.[idx]?.technologies) ? localData.projects[idx].technologies.join(", ") : localData.projects?.[idx]?.technologies || ""}
+                              onChange={(e) => {
+                                const parsed = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
+                                handleInputChange("projects", "technologies", parsed, idx);
+                              }}
+                              placeholder="Technologies (comma separated)"
+                              style={{
+                                fontSize: "0.875rem",
+                                color: "#6b7280",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
+                                marginTop: "6px",
+                              }}
+                              className="text-xs sm:text-sm text-gray-600"
+                            />
+                          ) : (
+                            project.technologies && (
+                              <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                                <strong>Technologies:</strong> {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
                               </p>
-                            )}
-                            {project.duration && (
-                              <p
-                                contentEditable={editMode}
-                                onBlur={(e) =>
-                                  handleInputChange(
-                                    "projects",
-                                    "duration",
-                                    e.target.textContent,
-                                    idx
-                                  )
-                                }
-                                style={{
-                                  fontSize: "0.875rem",
-                                  color: "#6b7280",
-                                }}
-                                className="text-xs sm:text-sm text-gray-600"
-                              >
-                                {project.duration}
-                              </p>
-                            )}
-                            {(project.link || project.github) && (
+                            )
+                          )}
+
+                            {editMode ? (
+                            <input
+                              type="text"
+                              value={localData.projects?.[idx]?.duration || ""}
+                              onChange={(e) => handleInputChange("projects", "duration", e.target.value, idx)}
+                              placeholder="MM/YYYY - MM/YYYY or 'Ongoing'"
+                              style={{
+                                fontSize: "0.875rem",
+                                color: "#6b7280",
+                                width: "100%",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "4px",
+                                padding: "6px",
+                                outline: "none",
+                                marginTop: "6px",
+                              }}
+                              className="text-xs sm:text-sm text-gray-600"
+                            />
+                          ) : (
+                            project.duration && (
+                              <p style={{ fontSize: "0.875rem", color: "#6b7280" }} className="text-xs sm:text-sm text-gray-600">{project.duration}</p>
+                            )
+                          )}
+
+                          {editMode ? (
+                            <div style={{ display: "flex", gap: "0.5rem", marginTop: "6px" }}>
+                              <input
+                                type="text"
+                                value={localData.projects?.[idx]?.link || ""}
+                                onChange={(e) => handleInputChange("projects", "link", e.target.value, idx)}
+                                placeholder="Live demo URL"
+                                style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: "4px", padding: "6px" }}
+                              />
+                              <input
+                                type="text"
+                                value={localData.projects?.[idx]?.github || ""}
+                                onChange={(e) => handleInputChange("projects", "github", e.target.value, idx)}
+                                placeholder="GitHub URL"
+                                style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: "4px", padding: "6px" }}
+                              />
+                            </div>
+                          ) : (
+                            (project.link || project.github) && (
                               <div style={{ marginTop: "0.5rem" }}>
                                 {project.link && (
-                                  <a
-                                    href={project.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                      color: "#3b82f6",
-                                      marginRight: "1rem",
-                                    }}
-                                  >
-                                    Live Demo
-                                  </a>
+                                  <a href={project.link} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", marginRight: "1rem" }}>Live Demo</a>
                                 )}
                                 {project.github && (
-                                  <a
-                                    href={project.github}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ color: "#3b82f6" }}
-                                  >
-                                    GitHub
-                                  </a>
+                                  <a href={project.github} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6" }}>GitHub</a>
                                 )}
                               </div>
-                            )}
-                            {showButtons && (
-                              <button
-                                onClick={() =>
-                                  handleRemoveSection("projects", idx)
-                                }
-                                style={{
-                                  fontSize: "0.875rem",
-                                  color: "#ef4444",
-                                  border: "none",
-                                  background: "none",
-                                  cursor: "pointer",
-                                }}
-                                className="text-xs sm:text-sm text-red-500 hover:text-red-700 transition-colors duration-300"
-                              >
-                                Remove Project
-                              </button>
-                            )}
-                          </div>
-                        )
-                      )}
+                            )
+                          )}
+
+                          {showButtons && (
+                            <button
+                              onClick={() => handleRemoveSection("projects", idx)}
+                              style={{
+                                fontSize: "0.875rem",
+                                backgroundColor: "#ef4444",
+                                color: "white",
+                                padding: "0.35rem 0.6rem",
+                                borderRadius: "0.375rem",
+                                border: "none",
+                                cursor: "pointer",
+                              }}
+                              className="text-xs sm:text-sm transition-colors duration-300"
+                            >
+                              Remove Project
+                            </button>
+                          )}
+                        </div>
+                      ))}
                       {showButtons && (
                         <button
                           onClick={() => handleAddSection("projects")}
                           style={{
                             fontSize: "0.875rem",
-                            color: "#3b82f6",
+                            backgroundColor: "#3b82f6",
+                            color: "white",
+                            padding: "0.35rem 0.6rem",
+                            borderRadius: "0.375rem",
                             border: "none",
-                            background: "none",
                             cursor: "pointer",
                           }}
-                          className="text-xs sm:text-sm text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                          className="text-xs sm:text-sm transition-colors duration-300"
                         >
                           Add Project
                         </button>
@@ -1360,9 +1715,9 @@ const Template5 = () => {
                   Cancel
                 </button>
               </>
-            ) : (
+              ) : (
               <button
-                onClick={() => setEditMode(true)}
+                onClick={() => { setLocalData(emptyTemplate); setEditMode(true); setErrors({}); }}
                 style={{
                   backgroundColor: "#3b82f6",
                   color: "white",

@@ -79,6 +79,7 @@ const Template16 = () => {
                   <>
                     <input
                       type="text"
+                      placeholder="Your Name"
                       value={localData.name || ""}
                       onChange={(e) => handleFieldChange("name", e.target.value)}
                       style={{
@@ -94,6 +95,7 @@ const Template16 = () => {
                     />
                     <input
                       type="text"
+                      placeholder="Job Title/Role"
                       value={localData.role || ""}
                       onChange={(e) => handleFieldChange("role", e.target.value)}
                       style={{
@@ -172,62 +174,81 @@ const Template16 = () => {
               )}
             </div>
 
-            {/* Skills Section */}
-            <div style={{ marginBottom: "2rem" }}>
-              <h3
-                style={{
-                  fontSize: "1.25rem",
-                  fontWeight: "bold",
-                  color: "#1f2937",
-                  marginBottom: "1rem",
-                  borderBottom: "1px solid #e5e7eb",
-                  paddingBottom: "0.5rem",
-                }}
-              >
-                Skills
-              </h3>
-              {editMode ? (
-                <textarea
-                  value={localData.skills ? localData.skills.join(", ") : ""}
-                  onChange={(e) => handleFieldChange("skills", e.target.value.split(", ").filter(skill => skill.trim()))}
-                  style={{
-                    width: "100%",
-                    minHeight: "60px",
-                    padding: "0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem",
-                    lineHeight: "1.5",
-                    resize: "vertical",
-                  }}
-                  placeholder="Enter skills separated by commas..."
-                />
-              ) : (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {localData.skills && localData.skills.length > 0 ? (
-                    localData.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        style={{
-                          backgroundColor: "#3b82f6",
-                          color: "#ffffff",
-                          padding: "0.25rem 0.75rem",
-                          borderRadius: "1rem",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                      No skills listed
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+           
+          {/* Skills Section */}
+<div style={{ marginBottom: "2rem" }}>
+  <h3
+    style={{
+      fontSize: "1.25rem",
+      fontWeight: "bold",
+      color: "#1f2937",
+      marginBottom: "1rem",
+      borderBottom: "1px solid #e5e7eb",
+      paddingBottom: "0.5rem",
+    }}
+  >
+    Skills
+  </h3>
+
+  {editMode ? (
+    <>
+      <textarea
+        value={localData.skillsText ?? (localData.skills ? localData.skills.join(", ") : "")}
+        onChange={(e) => {
+          const text = e.target.value;
+          setLocalData((prev) => ({ ...prev, skillsText: text }));
+        }}
+        onBlur={() => {
+          const parsed = (localData.skillsText || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0);
+          handleFieldChange("skills", parsed);
+          setLocalData((prev) => {
+            const { skillsText, ...rest } = prev;
+            return rest; 
+          });
+        }}
+        style={{
+          width: "100%",
+          minHeight: "60px",
+          padding: "0.75rem",
+          border: "1px solid #d1d5db",
+          borderRadius: "0.375rem",
+          fontSize: "0.875rem",
+          lineHeight: "1.5",
+          resize: "vertical",
+        }}
+        placeholder="Enter skills separated by commas..."
+      />
+      <p style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.5rem" }}>
+        Example: React, JavaScript, Node.js
+      </p>
+    </>
+  ) : (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+      {localData.skills && localData.skills.length > 0 ? (
+        localData.skills.map((skill, index) => (
+          <span
+            key={index}
+            style={{
+              backgroundColor: "#3b82f6",
+              color: "#ffffff",
+              padding: "0.25rem 0.75rem",
+              borderRadius: "1rem",
+              fontSize: "0.75rem",
+              fontWeight: "500",
+            }}
+          >
+            {skill}
+          </span>
+        ))
+      ) : (
+        <span style={{ color: "#6b7280", fontStyle: "italic" }}>No skills listed</span>
+      )}
+    </div>
+  )}
+</div>
 
           {/* Experience Section */}
 <div style={{ marginBottom: "2rem" }}>
@@ -591,7 +612,7 @@ const Template16 = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "flex-end",
+                  justifyContent: "space-evenly",
                   marginTop: "2rem",
                   paddingTop: "1rem",
                   borderTop: "1px solid #e5e7eb",

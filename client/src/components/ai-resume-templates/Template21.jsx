@@ -1,30 +1,33 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
 import { useResume } from "../../context/ResumeContext";
-import { FaPhoneAlt, FaEnvelope, FaLinkedin, FaMapMarkerAlt, FaGithub, FaGlobe } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaLinkedin, FaMapMarkerAlt, FaGithub, FaGlobe, FaExternalLinkAlt } from "react-icons/fa";
 
 const Template21 = () => {
   const resumeRef = useRef(null);
   const { resumeData, setResumeData } = useResume();
   const [editMode, setEditMode] = useState(false);
-  const [localData, setLocalData] = useState(resumeData);
+  const [localData, setLocalData] = useState(resumeData || {});
 
   useEffect(() => {
-    setLocalData(resumeData);
+    setLocalData(resumeData || {});
   }, [resumeData]);
 
   const handleFieldChange = (field, value) => {
     const updatedData = { ...localData, [field]: value };
     setLocalData(updatedData);
-    localStorage.setItem('resumeData', JSON.stringify(updatedData));
+    try {
+      localStorage.setItem('resumeData', JSON.stringify(updatedData));
+    } catch (e) {
+      // ignore storage errors
+    }
   };
 
   const handleArrayFieldChange = (field, index, value) => {
     setLocalData((prev) => ({
       ...prev,
-      [field]: prev[field].map((item, i) => (i === index ? { ...item, ...value } : item)),
+      [field]: prev[field] ? prev[field].map((item, i) => (i === index ? { ...item, ...value } : item)) : prev[field],
     }));
   };
 
@@ -34,18 +37,17 @@ const Template21 = () => {
   };
 
   const handleCancel = () => {
-    setLocalData(resumeData);
+    setLocalData(resumeData || {});
     setEditMode(false);
   };
 
-  const handleEnhance = (section) => {
-  };
+  const handleEnhance = (section) => {};
 
   const sectionTitleStyle = {
     fontWeight: "bold",
     fontSize: "1.1rem",
-    borderBottom: "2px solid #87CEEB", // Light blue underline like the image
-    color: "#000000", // Black text like the image
+    borderBottom: "2px solid #87CEEB",
+    color: "#000000",
     marginTop: "1rem",
     paddingBottom: "0.25rem",
     textTransform: "uppercase",
@@ -53,7 +55,16 @@ const Template21 = () => {
   };
 
   const sectionCardStyle = {
-    backgroundColor: "#f8f9fa", // Light grey background like the image
+    backgroundColor: "#f8f9fa",
+    padding: "0.8rem",
+    borderRadius: "0.5rem",
+    marginTop: "0.5rem",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #e9ecef",
+  };
+
+  const leftSectionCardStyle = {
+    backgroundColor: "#f8f9fa",
     padding: "0.8rem",
     borderRadius: "0.5rem",
     marginTop: "0.5rem",
@@ -62,7 +73,7 @@ const Template21 = () => {
   };
 
   const headerStyle = {
-    backgroundColor: "#E6F3FF", // Light blue background like the image
+    backgroundColor: "#E6F3FF",
     padding: "1.5rem",
     borderRadius: "0.5rem",
     marginBottom: "1rem",
@@ -243,10 +254,10 @@ const Template21 = () => {
                           margin: "0 0 0.5rem 0",
                         }}
                       >
-                        {resumeData.name}
+                        {resumeData.name || "JOHN DOE"}
                       </h1>
                       <h2 style={{ fontSize: "1.1rem", color: "#000000", margin: "0 0 0.5rem 0" }}>
-                        {resumeData.role}
+                        {resumeData.role || "Full Stack Developer"}
                       </h2>
                     </>
                   )}
@@ -266,75 +277,77 @@ const Template21 = () => {
                   >
                     {editMode ? (
                       <>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaPhoneAlt color="#87CEEB" size="12" />
-                          <input
-                            type="text"
-                            value={localData.phone || ""}
-                            onChange={(e) => handleFieldChange("phone", e.target.value)}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "0.85rem",
-                              color: "#000000",
-                              width: "100px",
-                              textAlign: "center",
-                            }}
-                            placeholder="Phone"
-                          />
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaEnvelope color="#87CEEB" size="12" />
-                          <input
-                            type="text"
-                            value={localData.email || ""}
-                            onChange={(e) => handleFieldChange("email", e.target.value)}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "0.85rem",
-                              color: "#000000",
-                              width: "120px",
-                              textAlign: "center",
-                            }}
-                            placeholder="Email"
-                          />
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaLinkedin color="#87CEEB" size="12" />
-                          <input
-                            type="text"
-                            value={localData.linkedin || ""}
-                            onChange={(e) => handleFieldChange("linkedin", e.target.value)}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "0.85rem",
-                              color: "#000000",
-                              width: "130px",
-                              textAlign: "center",
-                            }}
-                            placeholder="LinkedIn"
-                          />
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaMapMarkerAlt color="#87CEEB" size="12" />
-                          <input
-                            type="text"
-                            value={localData.location || ""}
-                            onChange={(e) => handleFieldChange("location", e.target.value)}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "0.85rem",
-                              color: "#000000",
-                              width: "80px",
-                              textAlign: "center",
-                            }}
-                            placeholder="Location"
-                          />
-                        </span>
-                        {localData.github && (
+                        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaPhoneAlt color="#87CEEB" size="12" />
+                            <input
+                              type="text"
+                              value={localData.phone || ""}
+                              onChange={(e) => handleFieldChange("phone", e.target.value)}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "0.85rem",
+                                color: "#000000",
+                                width: "100px",
+                                textAlign: "center",
+                              }}
+                              placeholder="Phone"
+                            />
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaEnvelope color="#87CEEB" size="12" />
+                            <input
+                              type="text"
+                              value={localData.email || ""}
+                              onChange={(e) => handleFieldChange("email", e.target.value)}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "0.85rem",
+                                color: "#000000",
+                                width: "120px",
+                                textAlign: "center",
+                              }}
+                              placeholder="Email"
+                            />
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaLinkedin color="#87CEEB" size="12" />
+                            <input
+                              type="text"
+                              value={localData.linkedin || ""}
+                              onChange={(e) => handleFieldChange("linkedin", e.target.value)}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "0.85rem",
+                                color: "#000000",
+                                width: "130px",
+                                textAlign: "center",
+                              }}
+                              placeholder="LinkedIn"
+                            />
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaMapMarkerAlt color="#87CEEB" size="12" />
+                            <input
+                              type="text"
+                              value={localData.location || ""}
+                              onChange={(e) => handleFieldChange("location", e.target.value)}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "0.85rem",
+                                color: "#000000",
+                                width: "80px",
+                                textAlign: "center",
+                              }}
+                              placeholder="Location"
+                            />
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", justifyContent: "center", marginTop: "0.35rem", flexWrap: "wrap" }}>
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                             <FaGithub color="#87CEEB" size="12" />
                             <input
@@ -346,14 +359,12 @@ const Template21 = () => {
                                 background: "transparent",
                                 fontSize: "0.85rem",
                                 color: "#000000",
-                                width: "120px",
+                                width: "160px",
                                 textAlign: "center",
                               }}
                               placeholder="GitHub"
                             />
                           </span>
-                        )}
-                        {localData.portfolio && (
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                             <FaGlobe color="#87CEEB" size="12" />
                             <input
@@ -365,38 +376,38 @@ const Template21 = () => {
                                 background: "transparent",
                                 fontSize: "0.85rem",
                                 color: "#000000",
-                                width: "120px",
+                                width: "160px",
                                 textAlign: "center",
                               }}
                               placeholder="Website"
                             />
                           </span>
-                        )}
+                        </div>
                       </>
                     ) : (
                       <>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaPhoneAlt color="#87CEEB" size="12" /> {resumeData.phone}
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaEnvelope color="#87CEEB" size="12" /> {resumeData.email}
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaLinkedin color="#87CEEB" size="12" /> {resumeData.linkedin}
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FaMapMarkerAlt color="#87CEEB" size="12" /> {resumeData.location}
-                        </span>
-                        {resumeData.github && (
+                        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                            <FaGithub color="#87CEEB" size="12" /> {resumeData.github}
+                            <FaPhoneAlt color="#87CEEB" size="12" /> {resumeData.phone || "123 456 7890"}
                           </span>
-                        )}
-                        {resumeData.portfolio && (
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                            <FaGlobe color="#87CEEB" size="12" /> {resumeData.portfolio}
+                            <FaEnvelope color="#87CEEB" size="12" /> {resumeData.email || "john@example.com"}
                           </span>
-                        )}
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaLinkedin color="#87CEEB" size="12" /> {resumeData.linkedin || "https://linkedin.com/in/john"}
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaMapMarkerAlt color="#87CEEB" size="12" /> {resumeData.location || "Pune"}
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", alignItems: "center", marginTop: "0.35rem", flexWrap: "wrap" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaGithub color="#87CEEB" size="12" /> {resumeData.github || "https://github.com/johndoe"}
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <FaGlobe color="#87CEEB" size="12" /> {resumeData.portfolio || "https://johndoe.dev"}
+                          </span>
+                        </div>
                       </>
                     )}
                   </div>
@@ -411,7 +422,7 @@ const Template21 = () => {
                 {/* SKILLS SECTION */}
                 <div>
                   <h3 style={sectionTitleStyle}>Skills & Technologies</h3>
-                  <div style={sectionCardStyle}>
+                  <div style={leftSectionCardStyle}>
                     {editMode ? (
                       <textarea
                         value={Array.isArray(localData.skills) ? localData.skills.join(", ") : localData.skills || ""}
@@ -426,14 +437,20 @@ const Template21 = () => {
                           lineHeight: "1.3",
                           background: "transparent",
                         }}
-                        placeholder="Enter your skills (comma separated)..."
+                        placeholder="Enter your skills..."
                       />
                     ) : (
                       <ul style={{ margin: "0", paddingLeft: "1rem", fontSize: "0.85rem", lineHeight: "1.3" }}>
-                        {Array.isArray(resumeData.skills) ? resumeData.skills.map((skill, idx) => (
+                        {Array.isArray(resumeData.skills) && resumeData.skills.length > 0 ? resumeData.skills.map((skill, idx) => (
                           <li key={idx} style={{ marginBottom: "0.5rem" }}>{skill}</li>
                         )) : (
-                          <li>React, Node.js, MongoDB, Express, JavaScript, HTML, CSS</li>
+                          <>
+                            <li style={{ marginBottom: "0.5rem" }}>React</li>
+                            <li style={{ marginBottom: "0.5rem" }}>Node.js</li>
+                            <li style={{ marginBottom: "0.5rem" }}>MongoDB</li>
+                            <li style={{ marginBottom: "0.5rem" }}>Express</li>
+                            <li style={{ marginBottom: "0.5rem" }}>Tailwind CSS</li>
+                          </>
                         )}
                       </ul>
                     )}
@@ -443,7 +460,7 @@ const Template21 = () => {
                 {/* LANGUAGES SECTION */}
                 <div style={{ marginTop: "0.8rem" }}>
                   <h3 style={sectionTitleStyle}>Languages</h3>
-                  <div style={sectionCardStyle}>
+                  <div style={leftSectionCardStyle}>
                     {editMode ? (
                       <textarea
                         value={Array.isArray(localData.languages) ? localData.languages.join(", ") : localData.languages || ""}
@@ -458,14 +475,17 @@ const Template21 = () => {
                           lineHeight: "1.3",
                           background: "transparent",
                         }}
-                        placeholder="Enter languages (comma separated)..."
+                        placeholder="Enter languages..."
                       />
                     ) : (
                       <ul style={{ margin: "0", paddingLeft: "1rem", fontSize: "0.85rem", lineHeight: "1.3" }}>
-                        {Array.isArray(resumeData.languages) ? resumeData.languages.map((lang, idx) => (
+                        {Array.isArray(resumeData.languages) && resumeData.languages.length > 0 ? resumeData.languages.map((lang, idx) => (
                           <li key={idx} style={{ marginBottom: "0.5rem" }}>{lang}</li>
                         )) : (
-                          <li>English (Native), Spanish (Intermediate)</li>
+                          <>
+                            <li style={{ marginBottom: "0.5rem" }}>English</li>
+                            <li style={{ marginBottom: "0.5rem" }}>Hindi</li>
+                          </>
                         )}
                       </ul>
                     )}
@@ -539,16 +559,16 @@ const Template21 = () => {
                         ) : (
                           <>
                             <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", fontWeight: "bold" }}>
-                              {edu.degree || "Bachelor of Science in Computer Science"}
+                              {edu.degree || "B.Tech in Computer Science"}
                             </h4>
                             <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.85rem", color: "#000000" }}>
-                              {edu.institution || "University of Technology"}
+                              {edu.institution || "XYZ University"}
                             </p>
                             <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.75rem", color: "#6b7280" }}>
                               {edu.duration || "2016 - 2020"}
                             </p>
                             <p style={{ margin: "0", fontSize: "0.75rem", color: "#6b7280" }}>
-                              {edu.location || "New York, NY"}
+                              {edu.location || "Pune"}
                             </p>
                           </>
                         )}
@@ -571,9 +591,20 @@ const Template21 = () => {
                           }}
                         />
                       ) : (
-                        <p style={{ margin: "0", fontSize: "0.85rem", lineHeight: "1.3", fontStyle: "italic", color: "#6b7280" }}>
-                          Add your education details here...
-                        </p>
+                        <>
+                          <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", fontWeight: "bold" }}>
+                            B.Tech in Computer Science
+                          </h4>
+                          <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.85rem", color: "#000000" }}>
+                            XYZ University
+                          </p>
+                          <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.75rem", color: "#6b7280" }}>
+                            2016 - 2020
+                          </p>
+                          <p style={{ margin: "0", fontSize: "0.75rem", color: "#6b7280" }}>
+                            Pune
+                          </p>
+                        </>
                       )}
                     </div>
                   )}
@@ -582,11 +613,11 @@ const Template21 = () => {
                 {/* INTERESTS SECTION */}
                 <div style={{ marginTop: "0.8rem" }}>
                   <h3 style={sectionTitleStyle}>Interests</h3>
-                  <div style={sectionCardStyle}>
+                  <div style={leftSectionCardStyle}>
                     {editMode ? (
                       <textarea
                         value={Array.isArray(localData.interests) ? localData.interests.join(", ") : localData.interests || ""}
-                        onChange={(e) => handleFieldChange("interests", e.target.value.split(", ").filter(interest => interest.trim()))}
+                        onChange={(e) => handleFieldChange("interests", e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
                         style={{
                           width: "100%",
                           minHeight: "50px",
@@ -600,8 +631,11 @@ const Template21 = () => {
                         placeholder="Enter your interests (comma separated)..."
                       />
                     ) : (
-                      <p style={{ margin: "0", fontSize: "0.85rem", lineHeight: "1.3" }}>
-                        {Array.isArray(resumeData.interests) ? resumeData.interests.join(", ") : "Web Development, Open Source, Reading, Travel"}
+                      <p style={{ margin: 0, fontSize: "0.85rem", color: "#000000", lineHeight: "1.3" }}>
+                        {Array.isArray(resumeData?.interests) && resumeData.interests.length > 0
+                          ? resumeData.interests.join(', ')
+                          : 'Open Source, Chess, UI Design'
+                        }
                       </p>
                     )}
                   </div>
@@ -632,7 +666,7 @@ const Template21 = () => {
                       />
                     ) : (
                       <p style={{ margin: "0", fontSize: "0.85rem", lineHeight: "1.3" }}>
-                        {resumeData.summary || "Passionate full-stack developer with 3+ years of experience building scalable web applications and delivering exceptional user experiences."}
+                        {resumeData.summary || "Passionate full-stack developer with 3+ years of experience..."}
                       </p>
                     )}
                   </div>
@@ -736,36 +770,49 @@ const Template21 = () => {
                                 ))}
                               </ul>
                             ) : (
-                              <p style={{ margin: "0", fontSize: "0.8rem", lineHeight: "1.3" }}>
-                                Built scalable web applications and improved system performance.
-                              </p>
+                              <ul style={{ margin: "0", paddingLeft: "1rem", fontSize: "0.8rem", lineHeight: "1.3" }}>
+                                <li>Built scalable MERN applications used by 10k+ users.</li>
+                                <li>Improved API performance by 40%.</li>
+                              </ul>
                             )}
                           </>
                         )}
                       </div>
                     ))
                   ) : (
-                    <div style={sectionCardStyle}>
-                      {editMode ? (
-                        <textarea
-                          placeholder="Add your experience details..."
-                          style={{
-                            width: "100%",
-                            minHeight: "80px",
-                            border: "none",
-                            resize: "vertical",
-                            fontFamily: "inherit",
-                            fontSize: "0.85rem",
-                            lineHeight: "1.3",
-                            background: "transparent",
-                          }}
-                        />
-                      ) : (
-                        <p style={{ margin: "0", fontSize: "0.85rem", lineHeight: "1.3", fontStyle: "italic", color: "#6b7280" }}>
-                          Add your professional experience here...
-                        </p>
-                      )}
-                    </div>
+                      <div style={sectionCardStyle}>
+                        {editMode ? (
+                          <textarea
+                            placeholder="Add your experience details..."
+                            style={{
+                              width: "100%",
+                              minHeight: "80px",
+                              border: "none",
+                              resize: "vertical",
+                              fontFamily: "inherit",
+                              fontSize: "0.85rem",
+                              lineHeight: "1.3",
+                              background: "transparent",
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", fontWeight: "bold" }}>
+                              Software Developer
+                            </h4>
+                            <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.85rem", color: "#000000" }}>
+                              ABC Pvt Ltd
+                            </p>
+                            <p style={{ margin: "0 0 0.3rem 0", fontSize: "0.75rem", color: "#6b7280" }}>
+                              2020 - Present | Mumbai
+                            </p>
+                            <ul style={{ margin: "0", paddingLeft: "1rem", fontSize: "0.8rem", lineHeight: "1.3" }}>
+                              <li>Built scalable MERN applications used by 10k+ users.</li>
+                              <li>Improved API performance by 40%.</li>
+                            </ul>
+                          </>
+                        )}
+                      </div>
                   )}
                 </div>
 
@@ -852,16 +899,16 @@ const Template21 = () => {
                         ) : (
                           <>
                             <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", fontWeight: "bold" }}>
-                              {project.name || "Project Name"}
+                              {project.name || "StudySync"}
                             </h4>
                             <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.8rem", lineHeight: "1.3" }}>
-                              {project.description || "Project description goes here..."}
+                              {project.description || "An online platform where students can upload, download, and interact with study notes."}
                             </p>
-                            {Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                            { (Array.isArray(project.technologies) && project.technologies.length > 0) || (!project.technologies) ? (
                               <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.75rem", color: "#6b7280" }}>
-                                <strong>Tech:</strong> {project.technologies.join(", ")}
+                                <strong>Tech:</strong> {Array.isArray(project.technologies) && project.technologies.length > 0 ? project.technologies.join(", ") : "React, Express, MongoDB"}
                               </p>
-                            )}
+                            ) : null}
                             {(project.link || project.github) && (
                               <p style={{ margin: "0", fontSize: "0.75rem", color: "#6b7280" }}>
                                 {project.link && <span style={{ marginRight: "1rem" }}>🔗 <a href={project.link} target="_blank" rel="noopener noreferrer" style={{ color: "#87CEEB" }}>Live Demo</a></span>}
@@ -873,27 +920,45 @@ const Template21 = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={sectionCardStyle}>
-                      {editMode ? (
-                        <textarea
-                          placeholder="Add your project details..."
-                          style={{
-                            width: "100%",
-                            minHeight: "60px",
-                            border: "none",
-                            resize: "vertical",
-                            fontFamily: "inherit",
-                            fontSize: "0.85rem",
-                            lineHeight: "1.3",
-                            background: "transparent",
-                          }}
-                        />
-                      ) : (
-                        <p style={{ margin: "0", fontSize: "0.85rem", lineHeight: "1.3", fontStyle: "italic", color: "#6b7280" }}>
-                          Add your project details here...
-                        </p>
-                      )}
-                    </div>
+                      <div style={sectionCardStyle}>
+                        {editMode ? (
+                          <textarea
+                            placeholder="Add your project details..."
+                            style={{
+                              width: "100%",
+                              minHeight: "60px",
+                              border: "none",
+                              resize: "vertical",
+                              fontFamily: "inherit",
+                              fontSize: "0.85rem",
+                              lineHeight: "1.3",
+                              background: "transparent",
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", fontWeight: "bold" }}>
+                              StudySync
+                            </h4>
+                            <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.8rem", lineHeight: "1.3" }}>
+                              An online platform where students can upload, download, and interact with study notes.
+                            </p>
+                            <p style={{ margin: "0 0 0.2rem 0", fontSize: "0.75rem", color: "#6b7280" }}>
+                              <strong>Tech:</strong> React, Express, MongoDB
+                            </p>
+                            <p style={{ margin: "0", fontSize: "0.75rem", color: "#6b7280" }}>
+                              <a href="https://studysync.example" target="_blank" rel="noopener noreferrer" aria-label="Live Demo" style={{ color: "#0875b8", textDecoration: "none", marginRight: "1rem", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                <span style={{ fontSize: "0.95rem" }}>🔗</span>
+                                <span>Live Demo</span>
+                              </a>
+                              <a href="https://github.com/studysync" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style={{ color: "#0875b8", textDecoration: "none", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                <span style={{ fontSize: "0.95rem" }}>📁</span>
+                                <span>GitHub</span>
+                              </a>
+                            </p>
+                          </>
+                        )}
+                      </div>
                   )}
                 </div>
               </div>

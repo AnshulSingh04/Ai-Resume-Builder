@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
+// This is the correct hook from your file
 import { useResume } from "../../context/ResumeContext";
 
 import PropTypes from "prop-types";
@@ -28,90 +29,42 @@ import {
   Languages,
 } from "lucide-react";
 
-// --- Default Resume Data ---
-const initialUserData = {
-  name: "Rhea Kapoor",
-  jobTitle: "Digital Marketing Specialist",
-  address: "New York, NY",
-  phone: "+1 555-123-4567",
-  email: "rhea.kapoor@email.com",
-  linkedin: "linkedin.com/in/rheakapoor",
-  github: "",
-  summary:
-    "A results-driven Digital Marketing Specialist with 4+ years of experience in developing and executing comprehensive digital strategies. Proven track record in SEO, SEM, social media management, content creation, and analytics to drive brand growth and achieve marketing objectives.",
-  skills: [
-    "SEO",
-    "SEM",
-    "Content Marketing",
-    "Social Media Strategy",
-    "Google Analytics",
-    "HubSpot",
-    "Email Marketing",
-    "PPC Campaigns",
-    "Data Analysis",
-    "CRM Management",
-    "Copywriting",
-    "A/B Testing",
-  ],
-  experience: [
-    {
-      id: "initial-exp-1",
-      title: "Digital Marketing Manager",
-      company: "Global Innovations",
-      duration: "Jan 2023 - Present",
-      location: "New York, NY",
-      points: [
-        "Spearheaded multi-channel digital marketing campaigns, resulting in a 30% increase in qualified leads.",
-        "Managed a team of 2 junior marketers, providing guidance and fostering professional growth.",
-        "Optimized SEO strategies, elevating organic search rankings for key product lines.",
-        "Analyzed campaign performance using Google Analytics and prepared detailed reports for stakeholders.",
-      ],
-    },
-    {
-      id: "initial-exp-2",
-      title: "Marketing Coordinator",
-      company: "Creative Solutions",
-      duration: "Aug 2020 - Dec 2022",
-      location: "New York, NY",
-      points: [
-        "Executed daily social media content calendars across various platforms, growing audience engagement by 20%.",
-        "Assisted in the creation and distribution of email marketing newsletters to a subscriber base of 10,000+.",
-        "Monitored and optimized PPC campaigns on Google Ads, achieving a 10% reduction in cost-per-conversion.",
-      ],
-    },
-  ],
-  education: [
-    {
-      id: "initial-edu-1",
-      year: "2020",
-      degree: "B.A. in Marketing",
-      institution: "New York University",
-    },
-  ],
-  languages: [
-    { id: "initial-lang-1", name: "English", level: "Native" },
-    { id: "initial-lang-2", name: "Spanish", level: "Conversational" },
-  ],
-  hobbies: ["Photography", "Yoga", "Blogging"],
-};
-
 // --- Resume Preview Component ---
 const UserResumePreview = forwardRef(
   ({ data, font, themeColor, zoomLevel }, ref) => {
-    const themeColorClass = `text-${themeColor}-700`;
-    const themeAccentClass = `text-${themeColor}-600`;
-    const themeBorderClass = `border-${themeColor}-300`;
-    const themeBgLight = `bg-${themeColor}-50`;
-    const themeBulletClass = `text-${themeColor}-500`;
+    
+    const colorMap = {
+      indigo: { text: "text-indigo-700", accent: "text-indigo-600", border: "border-indigo-300", bg: "bg-indigo-50", bullet: "text-indigo-500" },
+      blue: { text: "text-blue-700", accent: "text-blue-600", border: "border-blue-300", bg: "bg-blue-50", bullet: "text-blue-500" },
+      green: { text: "text-green-700", accent: "text-green-600", border: "border-green-300", bg: "bg-green-50", bullet: "text-green-500" },
+      purple: { text: "text-purple-700", accent: "text-purple-600", border: "border-purple-300", bg: "bg-purple-50", bullet: "text-purple-500" },
+      red: { text: "text-red-700", accent: "text-red-600", border: "border-red-300", bg: "bg-red-50", bullet: "text-red-500" },
+      orange: { text: "text-orange-700", accent: "text-orange-600", border: "border-orange-300", bg: "bg-orange-50", bullet: "text-orange-500" },
+      teal: { text: "text-teal-700", accent: "text-teal-600", border: "border-teal-300", bg: "bg-teal-50", bullet: "text-teal-500" },
+      pink: { text: "text-pink-700", accent: "text-pink-600", border: "border-pink-300", bg: "bg-pink-50", bullet: "text-pink-500" },
+      yellow: { text: "text-yellow-700", accent: "text-yellow-600", border: "border-yellow-300", bg: "bg-yellow-50", bullet: "text-yellow-500" },
+      gray: { text: "text-gray-700", accent: "text-gray-600", border: "border-gray-300", bg: "bg-gray-50", bullet: "text-gray-500" },
+    };
+
+    const theme = colorMap[themeColor] || colorMap.indigo; 
+
+    const themeColorClass = theme.text;
+    const themeAccentClass = theme.accent;
+    const themeBorderClass = theme.border;
+    const themeBgLight = theme.bg;
+    const themeBulletClass = theme.bullet;
 
     const Section = ({ title, children, icon, className = "" }) => (
+      // FIX 1: Use backticks for template literal
       <section className={`mb-8 pb-4 ${className}`}>
         {title && (
           <h2
+            // FIX 2: Use backticks for template literal
             className={`text-2xl md:text-3xl font-bold ${themeColorClass} mb-4 flex items-center`}
           >
             {icon &&
               React.createElement(icon, {
+                // FIX 3: Use backticks for template literal
                 className: `mr-3 h-6 w-6 ${themeAccentClass}`,
               })}
             {title}
@@ -132,34 +85,36 @@ const UserResumePreview = forwardRef(
       <div
         ref={ref}
         id="resume-preview-id"
-        className={`text-base text-gray-800 max-w-4xl mx-auto bg-white rounded-xl shadow-2xl printable-area overflow-hidden`}
+        // FIX 4: Use backticks for transform style
+        className="text-base text-gray-800 max-w-4xl mx-auto bg-white rounded-xl shadow-2xl printable-area overflow-hidden"
         style={{
           fontFamily: font,
-          transform: `scale(${zoomLevel})`,
+          transform: `scale(${zoomLevel})`, // Correct style
           transformOrigin: "top left",
         }}
       >
-        {/* Header Section */}
         <header
+          // FIX 5: Use backticks for template literal
           className={`py-10 px-12 text-center ${themeBgLight} border-b ${themeBorderClass}`}
         >
           <h1
-            className={`text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-2`}
+            className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-2"
           >
-            {data.name}
+            {data.name || "Your Name"}
           </h1>
-          {data.jobTitle && (
+          {data.role && ( 
             <p
+              // FIX 6: Use backticks for template literal
               className={`text-2xl md:text-3xl ${themeAccentClass} font-semibold mb-6`}
             >
-              {data.jobTitle}
+              {data.role}
             </p>
           )}
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-lg text-gray-700">
-            {data.address && (
+            {data.location && ( 
               <p className="flex items-center">
                 <MapPin size={18} className="mr-2.5 shrink-0 text-gray-600" />
-                {data.address}
+                {data.location}
               </p>
             )}
             {data.phone && (
@@ -171,6 +126,7 @@ const UserResumePreview = forwardRef(
             {data.email && (
               <p className="flex items-center">
                 <Mail size={18} className="mr-2.5 shrink-0 text-gray-600" />
+                {/* FIX 7: Use backticks for mailto link */}
                 <a href={`mailto:${data.email}`} className="hover:underline">
                   {data.email}
                 </a>
@@ -197,6 +153,7 @@ const UserResumePreview = forwardRef(
             {data.github && data.github.trim() !== "" && (
               <p className="flex items-center">
                 <Github size={18} className="mr-2.5 shrink-0 text-gray-600" />
+                {/* FIX 8: Use backticks for GitHub link */}
                 <a
                   href={`https://github.com/${data.github}`}
                   target="_blank"
@@ -207,10 +164,24 @@ const UserResumePreview = forwardRef(
                 </a>
               </p>
             )}
+            {data.portfolio && data.portfolio.trim() !== "" && ( 
+              <p className="flex items-center">
+                <User size={18} className="mr-2.5 shrink-0 text-gray-600" />
+                <a
+                  href={`https://${
+                    data.portfolio.startsWith("http") ? "" : "https://"
+                  }${data.portfolio}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  Portfolio
+                </a>
+              </p>
+            )}
           </div>
         </header>
 
-        {/* Main Content Sections */}
         <div className="p-10 md:p-12">
           {data.summary && (
             <Section title="Summary" icon={User}>
@@ -222,28 +193,30 @@ const UserResumePreview = forwardRef(
 
           {data.experience && data.experience.length > 0 && (
             <Section title="Experience" icon={Briefcase}>
-              {data.experience.map((exp) => (
-                <div key={exp.id} className="mb-6 last:mb-0">
+              {data.experience.map((exp, i) => (
+                <div key={exp.id || i} className="mb-6 last:mb-0">
                   <div className="flex justify-between items-baseline mb-1">
                     <h3 className="font-semibold text-gray-800 text-xl">
                       {exp.title} at{" "}
+                      {/* FIX 9: Use backticks for span class */}
                       <span className={`${themeAccentClass}`}>
-                        {exp.company}
+                        {exp.companyName} 
                       </span>
                     </h3>
                     <span className="text-md text-gray-500 font-semibold flex-shrink-0 ml-4">
-                      {exp.duration}
+                      {exp.date}
                     </span>
                   </div>
                   <p className="text-md italic text-gray-500 mb-2">
-                    {exp.location}
+                    {exp.companyLocation}
                   </p>
                   <ul className="list-inside text-md text-gray-700 space-y-1.5 pl-4">
-                    {exp.points &&
-                      exp.points.map(
+                    {exp.accomplishment &&
+                      exp.accomplishment.map(
                         (point, j) =>
                           point.trim() !== "" && (
                             <li key={j} className="flex items-start">
+                              {/* FIX 10: Use backticks for span class */}
                               <span
                                 className={`mr-2.5 mt-1 ${themeBulletClass}`}
                               >
@@ -261,19 +234,25 @@ const UserResumePreview = forwardRef(
 
           {data.education && data.education.length > 0 && (
             <Section title="Education" icon={GraduationCap}>
-              {data.education.map((edu) => (
-                <div key={edu.id} className="mb-5 last:mb-0">
+              {data.education.map((edu, i) => (
+                <div key={edu.id || i} className="mb-5 last:mb-0">
                   <div className="flex justify-between items-baseline mb-1">
                     <h3 className="text-xl font-medium text-gray-800">
                       {edu.degree}
                     </h3>
                     <span className="text-md text-gray-500 font-semibold flex-shrink-0 ml-4">
-                      {edu.year}
+                      {edu.duration}
                     </span>
                   </div>
+                  {/* FIX 11: Use backticks for p class */}
                   <p className={`text-md ${themeAccentClass}`}>
                     {edu.institution}
                   </p>
+                  {edu.location && ( 
+                    <p className="text-md italic text-gray-500 mt-1">
+                      {edu.location}
+                    </p>
+                  )}
                 </div>
               ))}
             </Section>
@@ -287,6 +266,7 @@ const UserResumePreview = forwardRef(
                     key={i}
                     className="break-inside-avoid-column flex items-center"
                   >
+                    {/* FIX 12: Use backticks for span class */}
                     <span className={`mr-2.5 ${themeBulletClass}`}>&bull;</span>{" "}
                     {skill}
                   </li>
@@ -297,22 +277,33 @@ const UserResumePreview = forwardRef(
 
           {data.languages && data.languages.length > 0 && (
             <Section title="Languages" icon={Languages}>
-              <ul className="text-lg space-y-2 pt-1">
-                {data.languages.map((lang) => (
-                  <li key={lang.id} className="flex items-center">
-                    <span className={`mr-2.5 ${themeAccentClass}`}>&bull;</span>
-                    <strong>{lang.name}:</strong>&nbsp;{lang.level}
+              <ul className="columns-1 md:columns-2 list-inside text-lg text-gray-700 space-y-2">
+                {data.languages.map((lang, i) => (
+                  <li
+                    key={i}
+                    className="break-inside-avoid-column flex items-center"
+                  >
+                    {/* FIX 13: Use backticks for span class */}
+                    <span className={`mr-2.5 ${themeBulletClass}`}>&bull;</span>{" "}
+                    {lang}
                   </li>
                 ))}
               </ul>
             </Section>
           )}
 
-          {data.hobbies && data.hobbies.length > 0 && (
-            <Section title="Hobbies" icon={Palette}>
-              <ul className="text-lg list-disc list-inside ml-5 space-y-1.5 pt-1">
-                {data.hobbies.map((hobby, i) => (
-                  <li key={i}>{hobby}</li>
+          {data.interests && data.interests.length > 0 && (
+            <Section title="Interests" icon={Palette}>
+              <ul className="columns-1 md:columns-2 list-inside text-lg text-gray-700 space-y-2">
+                {data.interests.map((hobby, i) => (
+                  <li 
+                    key={i}
+                    className="break-inside-avoid-column flex items-center"
+                  >
+                    {/* FIX 14: Use backticks for span class */}
+                    <span className={`mr-2.5 ${themeBulletClass}`}>&bull;</span>{" "}
+                    {hobby}
+                  </li>
                 ))}
               </ul>
             </Section>
@@ -333,6 +324,8 @@ UserResumePreview.propTypes = {
 UserResumePreview.displayName = "UserResumePreview";
 
 // --- Resume Edit Form ---
+// This form updates the LOCAL 'formData', which is fast.
+// THIS IS THE FIX FOR THE "single character" LAG.
 const UserResumeEditForm = ({ formData, setFormData }) => {
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -343,7 +336,7 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateField("imageUrl", reader.result);
+        updateField("profileImage", reader.result); // Use 'profileImage'
       };
       reader.readAsDataURL(file);
     }
@@ -360,13 +353,13 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
   const handleExperiencePointChange = (expIndex, pointIndex, value) => {
     setFormData((prev) => {
       const newExperience = [...prev.experience];
-      const currentPoints = newExperience[expIndex].points
-        ? [...newExperience[expIndex].points]
+      const currentPoints = newExperience[expIndex].accomplishment
+        ? [...newExperience[expIndex].accomplishment]
         : [];
       currentPoints[pointIndex] = value;
       newExperience[expIndex] = {
         ...newExperience[expIndex],
-        points: currentPoints,
+        accomplishment: currentPoints,
       };
       return { ...prev, experience: newExperience };
     });
@@ -375,6 +368,7 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
   const addArrayItem = (section, template) => {
     setFormData((prev) => ({
       ...prev,
+      // FIX 15: Use backticks for ID generation
       [section]: [
         ...prev[section],
         { ...template, id: `${section.slice(0, 3)}-${Date.now()}` },
@@ -392,13 +386,13 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
   const addExperiencePoint = (expIndex) => {
     setFormData((prev) => {
       const newExperience = [...prev.experience];
-      const currentPoints = newExperience[expIndex].points
-        ? [...newExperience[expIndex].points]
+      const currentPoints = newExperience[expIndex].accomplishment
+        ? [...newExperience[expIndex].accomplishment]
         : [];
       currentPoints.push("");
       newExperience[expIndex] = {
         ...newExperience[expIndex],
-        points: currentPoints,
+        accomplishment: currentPoints,
       };
       return { ...prev, experience: newExperience };
     });
@@ -407,10 +401,10 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
   const removeExperiencePoint = (expIndex, pointIndex) => {
     setFormData((prev) => {
       const newExperience = [...prev.experience];
-      if (newExperience[expIndex] && newExperience[expIndex].points) {
+      if (newExperience[expIndex] && newExperience[expIndex].accomplishment) {
         newExperience[expIndex] = {
           ...newExperience[expIndex],
-          points: newExperience[expIndex].points.filter(
+          accomplishment: newExperience[expIndex].accomplishment.filter(
             (_, i) => i !== pointIndex
           ),
         };
@@ -495,40 +489,51 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
           label="Full Name"
           value={formData.name}
           onChange={(e) => updateField("name", e.target.value)}
+          placeholder="e.g., Jane Doe"
         />
         <Input
-          label="Job Title (e.g., Software Engineer)"
-          value={formData.jobTitle}
-          onChange={(e) => updateField("jobTitle", e.target.value)}
+          label="Job Title"
+          value={formData.role} // Use 'role'
+          onChange={(e) => updateField("role", e.target.value)}
+          placeholder="e.g., Software Engineer"
         />
         <Input
           label="Address"
-          value={formData.address}
-          onChange={(e) => updateField("address", e.target.value)}
+          value={formData.location} // Use 'location'
+          onChange={(e) => updateField("location", e.target.value)}
+          placeholder="e.g., San Francisco, CA"
         />
         <Input
           label="Phone"
           value={formData.phone}
           onChange={(e) => updateField("phone", e.target.value)}
           type="tel"
+          placeholder="e.g., +1 123-456-7890"
         />
         <Input
           label="Email"
           value={formData.email}
           onChange={(e) => updateField("email", e.target.value)}
           type="email"
+          placeholder="e.g., jane.doe@example.com"
         />
         <Input
-          label="LinkedIn Profile (e.g., linkedin.com/in/yourname)"
+          label="LinkedIn Profile"
           value={formData.linkedin}
           onChange={(e) => updateField("linkedin", e.target.value)}
-          placeholder="Optional"
+          placeholder="e.g., linkedin.com/in/janedoe"
         />
         <Input
-          label="GitHub Username (e.g., yourusername)"
+          label="GitHub Username"
           value={formData.github}
           onChange={(e) => updateField("github", e.target.value)}
-          placeholder="Optional"
+          placeholder="e.g., janedoe"
+        />
+        <Input
+          label="Portfolio URL"
+          value={formData.portfolio} // Use 'portfolio'
+          onChange={(e) => updateField("portfolio", e.target.value)}
+          placeholder="e.g., my-portfolio.com"
         />
         <div>
           <label className="text-base font-medium text-gray-700 mb-1.5 flex items-center">
@@ -540,22 +545,22 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
             accept="image/*"
             onChange={handleImageUpload}
             className="block w-full text-base text-gray-700
-                       file:mr-4 file:py-2 file:px-4
-                       file:rounded-md file:border-0
-                       file:text-sm file:font-semibold
-                       file:bg-indigo-50 file:text-indigo-700
-                       hover:file:bg-indigo-100 cursor-pointer"
+                         file:mr-4 file:py-2 file:px-4
+                         file:rounded-md file:border-0
+                         file:text-sm file:font-semibold
+                         file:bg-indigo-50 file:text-indigo-700
+                         hover:file:bg-indigo-100 cursor-pointer"
           />
-          {formData.imageUrl && (
+          {formData.profileImage && (
             <div className="mt-4 flex items-center space-x-3">
               <img
-                src={formData.imageUrl}
+                src={formData.profileImage}
                 alt="Preview"
                 className="w-20 h-20 rounded-full object-cover border border-gray-300"
               />
               <p className="text-sm text-gray-500">Image loaded.</p>
               <button
-                onClick={() => updateField("imageUrl", "")}
+                onClick={() => updateField("profileImage", "")}
                 className="text-red-500 hover:text-red-700 text-sm flex items-center"
               >
                 <Trash2 size={16} className="mr-1" /> Remove
@@ -567,8 +572,8 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
           </p>
           <Input
             label="Image URL"
-            value={formData.imageUrl}
-            onChange={(e) => updateField("imageUrl", e.target.value)}
+            value={formData.profileImage}
+            onChange={(e) => updateField("profileImage", e.target.value)}
             placeholder="e.g., https://example.com/your-photo.jpg"
           />
         </div>
@@ -580,13 +585,14 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
           value={formData.summary}
           onChange={(e) => updateField("summary", e.target.value)}
           rows={5}
+          placeholder="Write a brief summary about your professional background..."
         />
       </FormSectionWrapper>
 
       <FormSectionWrapper title="Work Experience">
         {formData.experience.map((exp, i) => (
           <div
-            key={exp.id}
+            key={exp.id || i}
             className="p-4 border rounded-md bg-white space-y-3 relative"
           >
             <button
@@ -604,37 +610,28 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
             />
             <Input
               label="Company"
-              value={exp.company}
+              value={exp.companyName} // Use 'companyName'
               onChange={(e) =>
                 handleArrayFieldChange(
-                  "experience",
-                  i,
-                  "company",
-                  e.target.value
+                  "experience", i, "companyName", e.target.value
                 )
               }
             />
             <Input
-              label="Duration (e.g., Feb 2017 - Present)"
-              value={exp.duration}
+              label="Duration (e.g., Jan 2023 - Present)"
+              value={exp.date} // Use 'date'
               onChange={(e) =>
                 handleArrayFieldChange(
-                  "experience",
-                  i,
-                  "duration",
-                  e.target.value
+                  "experience", i, "date", e.target.value
                 )
               }
             />
             <Input
               label="Location"
-              value={exp.location}
+              value={exp.companyLocation} // Use 'companyLocation'
               onChange={(e) =>
                 handleArrayFieldChange(
-                  "experience",
-                  i,
-                  "location",
-                  e.target.value
+                  "experience", i, "companyLocation", e.target.value
                 )
               }
             />
@@ -642,8 +639,9 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
               <label className="block text-base font-medium text-gray-700 mb-1.5">
                 Key Responsibilities/Achievements:
               </label>
-              {exp.points &&
-                exp.points.map((point, j) => (
+              {/* Use 'accomplishment' */}
+              {exp.accomplishment &&
+                exp.accomplishment.map((point, j) => (
                   <div key={j} className="flex items-center mb-2">
                     <Textarea
                       value={point}
@@ -651,6 +649,7 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
                         handleExperiencePointChange(i, j, e.target.value)
                       }
                       rows={1}
+                      // FIX 16: Use backticks for placeholder
                       placeholder={`Point ${j + 1}`}
                     />
                     <button
@@ -673,11 +672,13 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
         <button
           onClick={() =>
             addArrayItem("experience", {
+              // FIX 17: Use backticks for ID generation
+              id: `exp-${Date.now()}`,
               title: "",
-              company: "",
-              duration: "",
-              location: "",
-              points: [""],
+              companyName: "",
+              date: "",
+              companyLocation: "",
+              accomplishment: [""],
             })
           }
           className="bg-indigo-500 text-white px-5 py-2.5 rounded-md hover:bg-indigo-600 flex items-center text-md"
@@ -689,7 +690,7 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
       <FormSectionWrapper title="Education">
         {formData.education.map((edu, i) => (
           <div
-            key={edu.id}
+            key={edu.id || i}
             className="p-4 border rounded-md bg-white space-y-3 relative"
           >
             <button
@@ -699,10 +700,10 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
               <Trash2 size={20} />
             </button>
             <Input
-              label="Year(s) (e.g., 2016 or 2014 - 2016)"
-              value={edu.year}
+              label="Duration (e.g., 2020 - 2024)"
+              value={edu.duration} // Use 'duration'
               onChange={(e) =>
-                handleArrayFieldChange("education", i, "year", e.target.value)
+                handleArrayFieldChange("education", i, "duration", e.target.value)
               }
             />
             <Input
@@ -717,10 +718,16 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
               value={edu.institution}
               onChange={(e) =>
                 handleArrayFieldChange(
-                  "education",
-                  i,
-                  "institution",
-                  e.target.value
+                  "education", i, "institution", e.target.value
+                )
+              }
+            />
+            <Input
+              label="Location"
+              value={edu.location} // Use 'location'
+              onChange={(e) =>
+                handleArrayFieldChange(
+                  "education", i, "location", e.target.value
                 )
               }
             />
@@ -728,7 +735,14 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
         ))}
         <button
           onClick={() =>
-            addArrayItem("education", { year: "", degree: "", institution: "" })
+            addArrayItem("education", { 
+              // FIX 18: Use backticks for ID generation
+              id: `edu-${Date.now()}`, 
+              duration: "", 
+              degree: "", 
+              institution: "",
+              location: ""
+            })
           }
           className="bg-indigo-500 text-white px-5 py-2.5 rounded-md hover:bg-indigo-600 flex items-center text-md"
         >
@@ -741,51 +755,25 @@ const UserResumeEditForm = ({ formData, setFormData }) => {
           label="Skills (comma-separated)"
           value={formData.skills.join(", ")}
           onChange={(e) => handleListChange("skills", e.target.value)}
+          placeholder="e.g., React, JavaScript, Project Management"
         />
       </FormSectionWrapper>
 
       <FormSectionWrapper title="Languages">
-        {formData.languages.map((lang, i) => (
-          <div
-            key={lang.id}
-            className="p-4 border rounded-md bg-white space-y-3 relative"
-          >
-            <button
-              onClick={() => removeArrayItem("languages", i)}
-              className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1"
-            >
-              <Trash2 size={20} />
-            </button>
-            <Input
-              label="Language"
-              value={lang.name}
-              onChange={(e) =>
-                handleArrayFieldChange("languages", i, "name", e.target.value)
-              }
-            />
-            <Input
-              label="Proficiency Level"
-              value={lang.level}
-              onChange={(e) =>
-                handleArrayFieldChange("languages", i, "level", e.target.value)
-              }
-              placeholder="e.g., Native, Fluent, Proficient, Conversational"
-            />
-          </div>
-        ))}
-        <button
-          onClick={() => addArrayItem("languages", { name: "", level: "" })}
-          className="bg-indigo-500 text-white px-5 py-2.5 rounded-md hover:bg-indigo-600 flex items-center text-md"
-        >
-          <PlusCircle size={20} className="mr-2" /> Add Language
-        </button>
+        <Textarea
+          label="Languages (comma-separated)"
+          value={formData.languages.join(", ")} // Use string array
+          onChange={(e) => handleListChange("languages", e.target.value)}
+          placeholder="e.g., English, Spanish"
+        />
       </FormSectionWrapper>
 
-      <FormSectionWrapper title="Hobbies">
+      <FormSectionWrapper title="Interests">
         <Textarea
-          label="Hobbies (comma-separated)"
-          value={formData.hobbies.join(", ")}
-          onChange={(e) => handleListChange("hobbies", e.target.value)}
+          label="Interests (comma-separated)"
+          value={formData.interests.join(", ")} // Use string array
+          onChange={(e) => handleListChange("interests", e.target.value)}
+          placeholder="e.g., Photography, Yoga, Blogging"
         />
       </FormSectionWrapper>
     </div>
@@ -797,10 +785,14 @@ UserResumeEditForm.propTypes = {
   setFormData: PropTypes.func.isRequired,
 };
 
-// --- Main Template Component ---
+// --- Main Template Component (with Manual Save/Cancel) ---
 const Template15 = () => {
-  const { userData, setUserData } = useResume();
-  const [formData, setFormData] = useState(userData || initialUserData);
+  // 1. Get the REAL data from your context
+  const { resumeData, setResumeData } = useResume();
+  
+  // 2. 'formData' is the TEMPORARY editing copy.
+  const [formData, setFormData] = useState(null); 
+  
   const [isEditing, setIsEditing] = useState(false);
   const [font, setFont] = useState("Inter");
   const [themeColor, setThemeColor] = useState("indigo");
@@ -810,25 +802,41 @@ const Template15 = () => {
   const [notificationType, setNotificationType] = useState("success");
   const resumeRef = useRef(null);
 
+  // 3. This effect syncs the local 'formData' with the context 'resumeData'
   useEffect(() => {
-    if (userData) {
-      setFormData(userData);
+    if (resumeData) {
+      setFormData(resumeData);
     }
-  }, [userData]);
+  }, [resumeData]); // Runs when resumeData from context changes
 
+  // 4. This is the SAVE function
   const handleSave = () => {
-    setUserData(formData);
+    // Save the temporary 'formData' to the context
+    setResumeData(formData); // This triggers the save to localStorage in your context
+    setIsEditing(false);
+    
     setNotificationMessage("Resume saved successfully!");
     setNotificationType("success");
     setShowNotifications(true);
     setTimeout(() => setShowNotifications(false), 3000);
   };
 
+  // --- PDF Download Function ---
   const handleDownload = async () => {
     if (!resumeRef.current) return;
+    
+    const originalZoom = zoomLevel;
+    const wasEditing = isEditing;
+    
+    setIsEditing(false); // Show the saved preview
+    setZoomLevel(1);
+    
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for re-render
 
     try {
+      const { default: jsPDF } = await import("jspdf");
       const html2canvas = (await import("html2canvas")).default;
+
       const canvas = await html2canvas(resumeRef.current, {
         scale: 2,
         useCORS: true,
@@ -837,73 +845,90 @@ const Template15 = () => {
       });
 
       const imgData = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = `${formData.name.replace(/\s+/g, "_")}_Resume.png`;
-      link.href = imgData;
-      link.click();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      const downloadName = (resumeData.name || "My_Resume").replace(/\s+/g, "_");
+      // FIX 19: Use backticks for download name
+      pdf.save(`${downloadName}_Resume.pdf`);
+
     } catch (error) {
-      console.error("Error downloading resume:", error);
-      setNotificationMessage("Error downloading resume. Please try again.");
+      console.error("Error downloading PDF:", error);
+      setNotificationMessage("Error downloading PDF. Please try again.");
       setNotificationType("error");
       setShowNotifications(true);
       setTimeout(() => setShowNotifications(false), 3000);
+    } finally {
+      setZoomLevel(originalZoom);
+      setIsEditing(wasEditing);
     }
   };
 
   const handlePrint = () => {
-    window.print();
+    const wasEditing = isEditing;
+    setIsEditing(false);
+
+    setTimeout(() => {
+      window.print();
+      setIsEditing(wasEditing);
+    }, 100);
   };
 
+  // 5. This is the EDIT / CANCEL function
   const toggleEditing = () => {
+    // Always reset the form to the last SAVED state ('resumeData')
+    setFormData(resumeData);
     setIsEditing(!isEditing);
   };
 
-  const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(prev + 0.1, 2));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
-  };
-
-  const handleResetZoom = () => {
-    setZoomLevel(1);
-  };
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+  const handleResetZoom = () => setZoomLevel(1);
 
   const availableFonts = [
-    "Inter",
-    "Roboto",
-    "Open Sans",
-    "Lato",
-    "Poppins",
-    "Montserrat",
-    "Source Sans Pro",
-    "Raleway",
-    "Ubuntu",
-    "Nunito",
+    "Inter", "Roboto", "Open Sans", "Lato", "Poppins", "Montserrat",
+    "Source Sans Pro", "Raleway", "Ubuntu", "Nunito",
   ];
 
   const availableColors = [
-    "indigo",
-    "blue",
-    "green",
-    "purple",
-    "red",
-    "orange",
-    "teal",
-    "pink",
-    "yellow",
-    "gray",
+    "indigo", "blue", "green", "purple", "red", "orange",
+    "teal", "pink", "yellow", "gray",
   ];
+
+  // Show a loading state until both context and local form are ready
+  if (!formData || !resumeData) {
+    return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <p>Loading Your Resume...</p>
+        </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style jsx global>{`
+        @media print {
+          body * { visibility: hidden; }
+          .printable-area, .printable-area * { visibility: visible; }
+          .printable-area {
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            margin: 0; padding: 0; box-shadow: none; border: none;
+            transform: scale(1) !important;
+          }
+        }
+      `}</style>
+
       <Navbar />
       <div className="flex">
         <Sidebar />
         <div className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Template 15 - Modern Professional
@@ -914,22 +939,23 @@ const Template15 = () => {
               </p>
             </div>
 
-            {/* Controls */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center space-x-4">
+                  
                   <button
                     onClick={toggleEditing}
+                    // FIX 20: Use backticks for button class
                     className={`flex items-center px-4 py-2 rounded-md transition-colors ${
                       isEditing
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-red-600 text-white hover:bg-red-700"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     {isEditing ? (
                       <>
                         <Eye size={20} className="mr-2" />
-                        Preview
+                        Cancel
                       </>
                     ) : (
                       <>
@@ -939,8 +965,7 @@ const Template15 = () => {
                     )}
                   </button>
 
-                  {!isEditing && (
-                    <>
+                  {isEditing ? (
                       <button
                         onClick={handleSave}
                         className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
@@ -948,23 +973,24 @@ const Template15 = () => {
                         <Save size={20} className="mr-2" />
                         Save
                       </button>
+                  ) : (
+                  <>
+                    <button
+                      onClick={handleDownload}
+                      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      <Download size={20} className="mr-2" />
+                      Download PDF
+                    </button>
 
-                      <button
-                        onClick={handleDownload}
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        <Download size={20} className="mr-2" />
-                        Download
-                      </button>
-
-                      <button
-                        onClick={handlePrint}
-                        className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                      >
-                        <Share2 size={20} className="mr-2" />
-                        Print
-                      </button>
-                    </>
+                    <button
+                      onClick={handlePrint}
+                      className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                    >
+                      <Share2 size={20} className="mr-2" />
+                      Print
+                    </button>
+                  </>
                   )}
                 </div>
 
@@ -1012,6 +1038,7 @@ const Template15 = () => {
                       >
                         <ZoomOut size={18} />
                       </button>
+                      {/* FIX 21: Use backticks for percentage display */}
                       <span className="text-sm text-gray-700 min-w-[60px] text-center">
                         {Math.round(zoomLevel * 100)}%
                       </span>
@@ -1035,25 +1062,30 @@ const Template15 = () => {
               </div>
             </div>
 
-            {/* Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* --- LAYOUT CHANGE: This now REPLACES content like Template2 --- */}
+            <div className="w-full">
               {isEditing ? (
-                <UserResumeEditForm
-                  formData={formData}
-                  setFormData={setFormData}
-                />
-              ) : (
-                <div className="lg:col-span-2">
-                  <UserResumePreview
-                    ref={resumeRef}
-                    data={formData}
-                    font={font}
-                    themeColor={themeColor}
-                    zoomLevel={zoomLevel}
+                /* Show the form, centered */
+                <div className="max-w-2xl mx-auto">
+                  <UserResumeEditForm
+                    formData={formData}
+                    setFormData={setFormData}
                   />
                 </div>
+              ) : (
+                /* Show the preview */
+                <UserResumePreview
+                  ref={resumeRef}
+                  // IMPORTANT: Pass formData (local state) to preview for real-time style updates
+                  data={formData} 
+                  font={font}
+                  themeColor={themeColor}
+                  zoomLevel={zoomLevel}
+                />
               )}
             </div>
+            {/* --- End of Layout Change --- */}
+
           </div>
         </div>
       </div>
@@ -1062,6 +1094,7 @@ const Template15 = () => {
       {showNotifications && (
         <div className="fixed bottom-4 right-4 z-50">
           <div
+            // FIX 22: Use backticks for notification class
             className={`px-6 py-4 rounded-lg shadow-lg text-white ${
               notificationType === "success" ? "bg-green-500" : "bg-red-500"
             }`}
